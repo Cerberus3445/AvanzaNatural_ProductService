@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: Product-Service
+  cache:
+    type: redis
+    cache-names: redis-cache
+  data:
+    redis:
+      host: localhost
+      password: passwordForRedis
+      port: 6379
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    url: jdbc:postgresql://localhost:5432/avanza_natural
+    user: postgres
+    password: password
+    baseline-on-migrate: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/avanza_natural
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+server:
+  port: 7070
