@@ -1,5 +1,9 @@
 package com.cerberus.product_service.dto;
 
+import com.cerberus.product_service.model.Category;
+import com.cerberus.product_service.model.ProductType;
+import com.cerberus.product_service.model.Subcategory;
+import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -29,4 +33,10 @@ public class ProductDto {
 
     @NotNull(message = "The product inStock status cannot be empty")
     private Boolean inStock;
+
+    private CategoryDto category;
+
+    private ProductTypeDto productType;
+
+    private SubcategoryDto subcategory;
 }
