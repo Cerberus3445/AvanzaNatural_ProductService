@@ -7,6 +7,7 @@ import com.cerberus.product_service.mapper.EntityDtoMapper;
 import com.cerberus.product_service.model.Category;
 import com.cerberus.product_service.repository.CategoryRepository;
 import com.cerberus.product_service.service.CategoryService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 public class CategoryServiceImpl implements CategoryService {
 
@@ -28,6 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Cacheable(value = "category", key = "#id")
     public CategoryDto get(Integer id) {
+        log.info("get {}", id);
         return this.mapper.toDto(this.categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryException("404.Category with %d id not found.".formatted(id))));
     }
@@ -35,6 +38,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Cacheable(value = "categoryProducts", key = "#id")
     public List<ProductDto> getCategoryProducts(Integer id) {
+        log.info("getCategoryProducts {}", id);
          Category category = this.categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryException("404.Category with %d id not found.".formatted(id)));
          return this.mapper.toDto(category.getProducts());
@@ -43,6 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void create(CategoryDto categoryDto) {
+        log.info("create {}", categoryDto);
         this.categoryRepository.save(this.mapper.toEntity(categoryDto));
     }
 
@@ -50,6 +55,7 @@ public class CategoryServiceImpl implements CategoryService {
     @CacheEvict(value = "category", key = "#id")
     @Transactional
     public void update(Integer id, CategoryDto categoryDto) {
+        log.info("update {}, {}", id, categoryDto);
         this.categoryRepository.findById(id).ifPresentOrElse(category -> {
             Category updateCategory = Category.builder()
                     .id(id)
@@ -66,6 +72,7 @@ public class CategoryServiceImpl implements CategoryService {
     @CacheEvict(value = "category", key = "#id")
     @Transactional
     public void delete(Integer id) {
+        log.info("delete {}", id);
         this.categoryRepository.deleteById(id);
     }
 }

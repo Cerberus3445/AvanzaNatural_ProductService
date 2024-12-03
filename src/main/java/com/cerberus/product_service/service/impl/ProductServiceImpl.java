@@ -7,6 +7,7 @@ import com.cerberus.product_service.mapper.EntityDtoMapper;
 import com.cerberus.product_service.model.Product;
 import com.cerberus.product_service.repository.ProductRepository;
 import com.cerberus.product_service.service.ProductService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 public class ProductServiceImpl implements ProductService {
 
@@ -27,6 +29,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Cacheable(value = "product", key = "#id")
     public ProductDto get(Integer id) {
+        log.info("get {}", id);
         return this.mapper.toDto(this.productRepository.findById(id)
                 .orElseThrow(() -> new ProductException("404. Product with %d id not found.".formatted(id))));
     }
@@ -34,6 +37,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public void create(ProductDto productDto) {
+        log.info("create {}", productDto);
         this.productRepository.save(this.mapper.toEntity(productDto));
     }
 
@@ -41,6 +45,7 @@ public class ProductServiceImpl implements ProductService {
     @CacheEvict(value = "product", key = "#id")
     @Transactional
     public void update(Integer id, ProductDto productDto) {
+        log.info("update {}, {}", id, productDto);
         this.productRepository.findById(id).ifPresentOrElse(product -> {
             Product updatedProduct = Product.builder()
                     .id(id)
@@ -62,6 +67,7 @@ public class ProductServiceImpl implements ProductService {
     @CacheEvict(value = "product", key = "#id")
     @Transactional
     public void delete(Integer id) {
+        log.info("delete {}", id);
         this.productRepository.deleteById(id);
     }
 }
