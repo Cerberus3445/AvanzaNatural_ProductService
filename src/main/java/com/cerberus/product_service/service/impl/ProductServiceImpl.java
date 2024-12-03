@@ -28,7 +28,7 @@ public class ProductServiceImpl implements ProductService {
     @Cacheable(value = "product", key = "#id")
     public ProductDto get(Integer id) {
         return this.mapper.toDto(this.productRepository.findById(id)
-                .orElseThrow(() -> new ProductException("Product with %d id not found.".formatted(id))));
+                .orElseThrow(() -> new ProductException("404. Product with %d id not found.".formatted(id))));
     }
 
     @Override
@@ -54,7 +54,7 @@ public class ProductServiceImpl implements ProductService {
                     .build();
             this.productRepository.save(updatedProduct);
         }, () -> {
-            throw new CategoryException("Product with %d id not found.".formatted(id));
+            throw new CategoryException("404. Product with %d id not found.".formatted(id));
         });
     }
 

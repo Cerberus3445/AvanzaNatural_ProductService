@@ -22,7 +22,6 @@ public class ProductType {
 
     private String title;
 
-    @OneToMany
-    @JoinColumn(name = "product_id", referencedColumnName = "id")
+    @OneToMany(mappedBy = "productType")
     private List<Product> products;
 }

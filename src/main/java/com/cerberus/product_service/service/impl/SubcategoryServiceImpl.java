@@ -30,14 +30,14 @@ public class SubcategoryServiceImpl implements SubcategoryService {
     @Cacheable(value = "subcategory", key = "#id")
     public SubcategoryDto get(Integer id) {
         return this.mapper.toDto(this.subcategoryRepository.findById(id)
-                .orElseThrow(() -> new SubcategoryException("Subcategory with %d id not found.".formatted(id))));
+                .orElseThrow(() -> new SubcategoryException("404. Subcategory with %d id not found.".formatted(id))));
     }
 
     @Override
     @Cacheable(value = "subcategoryProducts", key = "#id")
     public List<ProductDto> getSubcategoryProducts(Integer subcategoryId) {
         Subcategory subcategory = this.subcategoryRepository.findById(subcategoryId)
-                .orElseThrow(() -> new SubcategoryException("Subcategory with %d id not found.".formatted(subcategoryId)));
+                .orElseThrow(() -> new SubcategoryException("404. Subcategory with %d id not found.".formatted(subcategoryId)));
         return this.mapper.toDto(subcategory.getProducts());
     }
 
@@ -59,7 +59,7 @@ public class SubcategoryServiceImpl implements SubcategoryService {
                     .build();
             this.subcategoryRepository.save(updatedSubcategory);
         }, () -> {
-            throw new CategoryException("Subcategory with %d id not found.".formatted(id));
+            throw new CategoryException("404. Subcategory with %d id not found.".formatted(id));
         });
     }
 

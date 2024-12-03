@@ -29,14 +29,14 @@ public class CategoryServiceImpl implements CategoryService {
     @Cacheable(value = "category", key = "#id")
     public CategoryDto get(Integer id) {
         return this.mapper.toDto(this.categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryException("Category with %d id not found.".formatted(id))));
+                .orElseThrow(() -> new CategoryException("404.Category with %d id not found.".formatted(id))));
     }
 
     @Override
     @Cacheable(value = "categoryProducts", key = "#id")
     public List<ProductDto> getCategoryProducts(Integer id) {
          Category category = this.categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryException("Category with %d id not found.".formatted(id)));
+                .orElseThrow(() -> new CategoryException("404.Category with %d id not found.".formatted(id)));
          return this.mapper.toDto(category.getProducts());
     }
 
@@ -58,7 +58,7 @@ public class CategoryServiceImpl implements CategoryService {
                     .build();
             this.categoryRepository.save(updateCategory);
         }, () -> {
-            throw new CategoryException("Category with %d id not found.".formatted(id));
+            throw new CategoryException("404.Category with %d id not found.".formatted(id));
         });
     }
 

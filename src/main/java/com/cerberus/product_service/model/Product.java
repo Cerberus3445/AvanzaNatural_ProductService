@@ -27,11 +27,14 @@ public class Product {
     private Boolean inStock;
 
     @ManyToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
 
     @ManyToOne
-    private ProductType productType;
+    @JoinColumn(name = "subcategory_id", referencedColumnName = "id")
+    private Subcategory subcategory;
 
     @ManyToOne
-    private Subcategory subcategory;
+    @JoinColumn(name = "product_type_id", referencedColumnName = "id")
+    private ProductType productType;
 }

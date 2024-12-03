@@ -30,24 +30,26 @@ public class ProductTypeServiceImpl implements ProductTypeService {
     @Cacheable(value = "productType", key = "#id")
     public ProductTypeDto get(Integer id) {
         return this.mapper.toDto(this.productTypeRepository.findById(id)
-                .orElseThrow(() -> new ProductTypeException("ProductType with %d id not found.".formatted(id))));
+                .orElseThrow(() -> new ProductTypeException("404. ProductType with %d id not found.".formatted(id))));
     }
 
     @Override
     @Cacheable(value = "productTypeProduct", key = "#id")
     public List<ProductDto> getProductTypeProducts(Integer id) {
         ProductType productType =  this.productTypeRepository.findById(id)
-                .orElseThrow(() -> new ProductTypeException("ProductType with %d id not found.".formatted(id)));
+                .orElseThrow(() -> new ProductTypeException("404.ProductType with %d id not found.".formatted(id)));
         return mapper.toDto(productType.getProducts());
     }
 
     @Override
+    @Transactional
     public void create(ProductTypeDto productTypeDto) {
         this.productTypeRepository.save(this.mapper.toEntity(productTypeDto));
     }
 
     @Override
     @CacheEvict(value = "productType", key = "#id")
+    @Transactional
     public void update(Integer id, ProductTypeDto productTypeDto) {
         this.productTypeRepository.findById(id).ifPresentOrElse(productType -> {
             ProductType updatedProductType = ProductType.builder()
@@ -57,12 +59,13 @@ public class ProductTypeServiceImpl implements ProductTypeService {
                     .build();
             this.productTypeRepository.save(updatedProductType);
         }, () -> {
-            throw new CategoryException("ProductType with %d id not found.".formatted(id));
+            throw new CategoryException("404.ProductType with %d id not found.".formatted(id));
         });
     }
 
     @Override
     @CacheEvict(value = "productType", key = "#id")
+    @Transactional
     public void delete(Integer id) {
         this.productTypeRepository.deleteById(id);
     }
