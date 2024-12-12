@@ -22,7 +22,6 @@ public class Subcategory {
 
     private String title;
 
-    @OneToMany
-    @JoinColumn(name = "product_id", referencedColumnName = "id")
+    @OneToMany(mappedBy = "subcategory")
     private List<Product> products;
 }
