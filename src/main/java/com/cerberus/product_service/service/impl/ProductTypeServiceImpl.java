@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -76,4 +77,10 @@ public class ProductTypeServiceImpl implements ProductTypeService {
         log.info("delete {}", id);
         this.productTypeRepository.deleteById(id);
     }
+
+    @Override
+    public Optional<ProductType> getByTitle(String title) {
+        return this.productTypeRepository.findByTitle(title);
+    }
+
 }

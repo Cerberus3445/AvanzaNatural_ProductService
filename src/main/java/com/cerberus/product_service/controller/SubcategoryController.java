@@ -4,6 +4,8 @@ import com.cerberus.product_service.dto.ProductDto;
 import com.cerberus.product_service.dto.SubcategoryDto;
 import com.cerberus.product_service.exception.ProductException;
 import com.cerberus.product_service.service.SubcategoryService;
+import com.cerberus.product_service.validator.create.SubcategoryCreateValidator;
+import com.cerberus.product_service.validator.update.SubcategoryUpdateValidator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -22,6 +24,12 @@ public class SubcategoryController {
     @Autowired
     public SubcategoryService subcategoryService;
 
+    @Autowired
+    public SubcategoryCreateValidator createValidator;
+
+    @Autowired
+    public SubcategoryUpdateValidator updateValidator;
+
     @GetMapping("/{id}")
     public SubcategoryDto get(@PathVariable("id") Integer id){
         return this.subcategoryService.get(id);
@@ -35,9 +43,12 @@ public class SubcategoryController {
     @PostMapping
     public ResponseEntity<String> create(@RequestBody @Valid SubcategoryDto subcategoryDto,
                                          BindingResult bindingResult){
+        this.createValidator.validate(subcategoryDto, bindingResult);
+
         if(bindingResult.hasErrors()){
             throw new ProductException(collectErrorsToString(bindingResult.getFieldErrors()));
         }
+
         this.subcategoryService.create(subcategoryDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("The subcategory has been created");
     }
@@ -46,9 +57,12 @@ public class SubcategoryController {
     public ResponseEntity<String> update(@PathVariable("id") Integer id,
                                          @RequestBody @Valid SubcategoryDto subcategoryDto,
                                          BindingResult bindingResult){
+        this.updateValidator.validate(subcategoryDto, bindingResult);
+
         if(bindingResult.hasErrors()){
             throw new ProductException(collectErrorsToString(bindingResult.getFieldErrors()));
         }
+
         this.subcategoryService.update(id, subcategoryDto);
         return ResponseEntity.status(HttpStatus.OK).body("The subcategory has been updated");
     }

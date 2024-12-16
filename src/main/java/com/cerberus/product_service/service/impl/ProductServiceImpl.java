@@ -14,6 +14,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 
 @Service
 @Slf4j
@@ -69,5 +71,10 @@ public class ProductServiceImpl implements ProductService {
     public void delete(Integer id) {
         log.info("delete {}", id);
         this.productRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<Product> getByTitle(String title) {
+        return this.productRepository.findByTitle(title);
     }
 }

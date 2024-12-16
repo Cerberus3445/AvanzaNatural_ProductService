@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -75,5 +76,10 @@ public class SubcategoryServiceImpl implements SubcategoryService {
     public void delete(Integer id) {
         log.info("delete {}", id);
         this.subcategoryRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<Subcategory> getByTitle(String title) {
+        return this.subcategoryRepository.findByTitle(title);
     }
 }

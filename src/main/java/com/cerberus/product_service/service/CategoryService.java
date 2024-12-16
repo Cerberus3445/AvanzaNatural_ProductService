@@ -5,6 +5,7 @@ import com.cerberus.product_service.dto.ProductDto;
 import com.cerberus.product_service.model.Category;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CategoryService {
 
@@ -17,4 +18,6 @@ public interface CategoryService {
     void update(Integer id, CategoryDto categoryDto);
 
     void delete(Integer id);
+
+    Optional<Category> getByTitle(String title);
 }

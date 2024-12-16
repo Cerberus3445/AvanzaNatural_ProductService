@@ -5,6 +5,7 @@ import com.cerberus.product_service.dto.SubcategoryDto;
 import com.cerberus.product_service.model.Subcategory;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface SubcategoryService {
 
@@ -17,4 +18,6 @@ public interface SubcategoryService {
     void update(Integer id, SubcategoryDto subcategoryDto);
 
     void delete(Integer id);
+
+    Optional<Subcategory> getByTitle(String title);
 }

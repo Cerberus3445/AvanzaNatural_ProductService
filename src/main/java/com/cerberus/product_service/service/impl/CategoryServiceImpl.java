@@ -15,8 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
+
 @Slf4j
 @Transactional(readOnly = true)
 public class CategoryServiceImpl implements CategoryService {
@@ -74,5 +76,10 @@ public class CategoryServiceImpl implements CategoryService {
     public void delete(Integer id) {
         log.info("delete {}", id);
         this.categoryRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<Category> getByTitle(String title) {
+        return this.categoryRepository.findByTitle(title);
     }
 }
