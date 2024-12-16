@@ -1,6 +1,9 @@
 package com.cerberus.product_service.service;
 
 import com.cerberus.product_service.dto.ProductDto;
+import com.cerberus.product_service.model.Product;
+
+import java.util.Optional;
 
 
 public interface ProductService {
@@ -12,4 +15,6 @@ public interface ProductService {
     void update(Integer id, ProductDto productDto);
 
     void delete(Integer id);
+
+    Optional<Product> getByTitle(String title);
 }

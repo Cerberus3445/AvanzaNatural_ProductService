@@ -4,6 +4,8 @@ import com.cerberus.product_service.dto.ProductDto;
 import com.cerberus.product_service.exception.ProductException;
 import com.cerberus.product_service.service.ProductService;
 import com.cerberus.product_service.util.CacheClear;
+import com.cerberus.product_service.validator.create.ProductCreateValidator;
+import com.cerberus.product_service.validator.update.ProductUpdateValidator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -25,6 +27,12 @@ public class ProductController {
     @Autowired
     public CacheClear clearCache;
 
+    @Autowired
+    public ProductCreateValidator createValidator;
+
+    @Autowired
+    public ProductUpdateValidator updateValidator;
+
     @GetMapping("/{id}")
     public ProductDto get(@PathVariable("id") Integer id){
         return this.productService.get(id);
@@ -33,6 +41,8 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<String> create(@RequestBody @Valid ProductDto productDto,
                                          BindingResult bindingResult){
+        this.createValidator.validate(productDto, bindingResult);
+
         if(bindingResult.hasErrors()){
             throw new ProductException(collectErrorsToString(bindingResult.getFieldErrors()));
         }
@@ -46,6 +56,8 @@ public class ProductController {
     public ResponseEntity<String> update(@PathVariable("id") Integer id,
                                          @RequestBody @Valid ProductDto productDto,
                                          BindingResult bindingResult){
+        this.updateValidator.validate(productDto, bindingResult);
+
         if(bindingResult.hasErrors()){
             throw new ProductException(collectErrorsToString(bindingResult.getFieldErrors()));
         }

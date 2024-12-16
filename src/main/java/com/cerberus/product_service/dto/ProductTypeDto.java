@@ -3,12 +3,14 @@ package com.cerberus.product_service.dto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import java.io.Serializable;
 
 @Data
+@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductTypeDto implements Serializable {
