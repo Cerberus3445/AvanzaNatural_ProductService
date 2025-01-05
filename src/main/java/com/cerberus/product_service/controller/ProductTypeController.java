@@ -2,12 +2,12 @@ package com.cerberus.product_service.controller;
 
 import com.cerberus.product_service.dto.ProductDto;
 import com.cerberus.product_service.dto.ProductTypeDto;
-import com.cerberus.product_service.exception.ProductException;
+import com.cerberus.product_service.exception.ValidationException;
 import com.cerberus.product_service.service.ProductTypeService;
-import com.cerberus.product_service.validator.create.ProductTypeCreateValidator;
-import com.cerberus.product_service.validator.update.ProductTypeUpdateValidator;
+import com.cerberus.product_service.validator.CreateValidator;
+import com.cerberus.product_service.validator.UpdateValidator;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,17 +18,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/productstypes")
 public class ProductTypeController {
 
-    @Autowired
-    public ProductTypeService productTypeService;
+    public final ProductTypeService productTypeService;
 
-    @Autowired
-    public ProductTypeCreateValidator createValidator;
+    public final CreateValidator createValidator;
 
-    @Autowired
-    public ProductTypeUpdateValidator updateValidator;
+    public final UpdateValidator updateValidator;
 
     @GetMapping("/{id}")
     public ProductTypeDto get(@PathVariable("id") Integer id){
@@ -43,11 +41,9 @@ public class ProductTypeController {
     @PostMapping
     public ResponseEntity<String> create(@RequestBody @Valid ProductTypeDto productTypeDto,
                                          BindingResult bindingResult){
-        this.createValidator.validate(productTypeDto, bindingResult);
+        if(bindingResult.hasErrors()) throw new ValidationException(collectErrorsToString(bindingResult.getFieldErrors()));
 
-        if(bindingResult.hasErrors()){
-            throw new ProductException(collectErrorsToString(bindingResult.getFieldErrors()));
-        }
+        this.createValidator.validate(productTypeDto);
 
         this.productTypeService.create(productTypeDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("The product type has been created");
@@ -57,11 +53,10 @@ public class ProductTypeController {
     public ResponseEntity<String> update(@PathVariable("id") Integer id,
                                          @RequestBody @Valid ProductTypeDto productTypeDto,
                                          BindingResult bindingResult){
-        this.updateValidator.validate(productTypeDto, bindingResult);
+        if(bindingResult.hasErrors()) throw new ValidationException(collectErrorsToString(bindingResult.getFieldErrors()));
 
-        if(bindingResult.hasErrors()){
-            throw new ProductException(collectErrorsToString(bindingResult.getFieldErrors()));
-        }
+        productTypeDto.setId(id); //for update validation
+        this.updateValidator.validate(productTypeDto);
 
         this.productTypeService.update(id, productTypeDto);
         return ResponseEntity.status(HttpStatus.OK).body("The product type has been updated");

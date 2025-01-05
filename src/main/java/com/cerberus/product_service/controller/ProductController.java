@@ -1,13 +1,13 @@
 package com.cerberus.product_service.controller;
 
 import com.cerberus.product_service.dto.ProductDto;
-import com.cerberus.product_service.exception.ProductException;
+import com.cerberus.product_service.exception.ValidationException;
 import com.cerberus.product_service.service.ProductService;
 import com.cerberus.product_service.util.CacheClear;
-import com.cerberus.product_service.validator.create.ProductCreateValidator;
-import com.cerberus.product_service.validator.update.ProductUpdateValidator;
+import com.cerberus.product_service.validator.CreateValidator;
+import com.cerberus.product_service.validator.UpdateValidator;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,20 +18,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/products")
 public class ProductController {
 
-    @Autowired
-    public ProductService productService;
+    public final ProductService productService;
 
-    @Autowired
-    public CacheClear clearCache;
+    public final CacheClear clearCache;
 
-    @Autowired
-    public ProductCreateValidator createValidator;
+    public final CreateValidator createValidator;
 
-    @Autowired
-    public ProductUpdateValidator updateValidator;
+    public final UpdateValidator updateValidator;
 
     @GetMapping("/{id}")
     public ProductDto get(@PathVariable("id") Integer id){
@@ -41,11 +38,10 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<String> create(@RequestBody @Valid ProductDto productDto,
                                          BindingResult bindingResult){
-        this.createValidator.validate(productDto, bindingResult);
+        if(bindingResult.hasErrors()) throw new ValidationException(collectErrorsToString(bindingResult.getFieldErrors()));
 
-        if(bindingResult.hasErrors()){
-            throw new ProductException(collectErrorsToString(bindingResult.getFieldErrors()));
-        }
+        this.createValidator.validate(productDto);
+
         this.productService.create(productDto);
 
         clearCache(productDto);
@@ -56,11 +52,10 @@ public class ProductController {
     public ResponseEntity<String> update(@PathVariable("id") Integer id,
                                          @RequestBody @Valid ProductDto productDto,
                                          BindingResult bindingResult){
-        this.updateValidator.validate(productDto, bindingResult);
+        if(bindingResult.hasErrors()) throw new ValidationException(collectErrorsToString(bindingResult.getFieldErrors()));
 
-        if(bindingResult.hasErrors()){
-            throw new ProductException(collectErrorsToString(bindingResult.getFieldErrors()));
-        }
+        productDto.setId(id); //for update validation
+        this.updateValidator.validate(productDto);
 
         this.productService.update(id, productDto);
         clearCache(productDto);

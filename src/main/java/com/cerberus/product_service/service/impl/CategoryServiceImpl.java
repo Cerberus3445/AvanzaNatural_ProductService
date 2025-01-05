@@ -2,13 +2,13 @@ package com.cerberus.product_service.service.impl;
 
 import com.cerberus.product_service.dto.CategoryDto;
 import com.cerberus.product_service.dto.ProductDto;
-import com.cerberus.product_service.exception.CategoryException;
+import com.cerberus.product_service.exception.NotFoundException;
 import com.cerberus.product_service.mapper.EntityDtoMapper;
 import com.cerberus.product_service.model.Category;
 import com.cerberus.product_service.repository.CategoryRepository;
 import com.cerberus.product_service.service.CategoryService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -17,24 +17,22 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-@Service
-
 @Slf4j
+@Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
-    @Autowired
-    private EntityDtoMapper mapper;
+    private final EntityDtoMapper mapper;
 
     @Override
     @Cacheable(value = "category", key = "#id")
     public CategoryDto get(Integer id) {
         log.info("get {}", id);
         return this.mapper.toDto(this.categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryException("404.Category with %d id not found.".formatted(id))));
+                .orElseThrow(() -> new NotFoundException("Category",id)));
     }
 
     @Override
@@ -42,7 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
     public List<ProductDto> getCategoryProducts(Integer id) {
         log.info("getCategoryProducts {}", id);
          Category category = this.categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryException("404.Category with %d id not found.".formatted(id)));
+                .orElseThrow(() -> new NotFoundException("Category",id));
          return this.mapper.toDto(category.getProducts());
     }
 
@@ -66,7 +64,7 @@ public class CategoryServiceImpl implements CategoryService {
                     .build();
             this.categoryRepository.save(updateCategory);
         }, () -> {
-            throw new CategoryException("404.Category with %d id not found.".formatted(id));
+            throw new NotFoundException("Category",id);
         });
     }
 
