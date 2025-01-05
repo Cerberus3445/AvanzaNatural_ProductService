@@ -1,14 +1,13 @@
 package com.cerberus.product_service.service.impl;
 
 import com.cerberus.product_service.dto.ProductDto;
-import com.cerberus.product_service.exception.CategoryException;
-import com.cerberus.product_service.exception.ProductException;
+import com.cerberus.product_service.exception.NotFoundException;
 import com.cerberus.product_service.mapper.EntityDtoMapper;
 import com.cerberus.product_service.model.Product;
 import com.cerberus.product_service.repository.ProductRepository;
 import com.cerberus.product_service.service.ProductService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -17,23 +16,22 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 
-@Service
 @Slf4j
+@Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    private EntityDtoMapper mapper;
+    private final EntityDtoMapper mapper;
 
     @Override
     @Cacheable(value = "product", key = "#id")
     public ProductDto get(Integer id) {
         log.info("get {}", id);
         return this.mapper.toDto(this.productRepository.findById(id)
-                .orElseThrow(() -> new ProductException("404. Product with %d id not found.".formatted(id))));
+                .orElseThrow(() -> new NotFoundException("Product",id)));
     }
 
     @Override
@@ -61,7 +59,7 @@ public class ProductServiceImpl implements ProductService {
                     .build();
             this.productRepository.save(updatedProduct);
         }, () -> {
-            throw new CategoryException("404. Product with %d id not found.".formatted(id));
+            throw new NotFoundException("Product",id);
         });
     }
 

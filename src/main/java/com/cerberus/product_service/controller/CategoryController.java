@@ -2,12 +2,13 @@ package com.cerberus.product_service.controller;
 
 import com.cerberus.product_service.dto.CategoryDto;
 import com.cerberus.product_service.dto.ProductDto;
-import com.cerberus.product_service.exception.ProductException;
+import com.cerberus.product_service.exception.AlreadyExistsException;
+import com.cerberus.product_service.exception.ValidationException;
 import com.cerberus.product_service.service.CategoryService;
-import com.cerberus.product_service.validator.create.CategoryCreateValidator;
-import com.cerberus.product_service.validator.update.CategoryUpdateValidator;
+import com.cerberus.product_service.validator.CreateValidator;
+import com.cerberus.product_service.validator.UpdateValidator;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,17 +19,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/categories")
 public class CategoryController {
 
-    @Autowired
-    public CategoryService categoryService;
+    public final CategoryService categoryService;
 
-    @Autowired
-    public CategoryCreateValidator createValidator;
+    public final CreateValidator createValidator;
 
-    @Autowired
-    public CategoryUpdateValidator updateValidator;
+    public final UpdateValidator updateValidator;
 
     @GetMapping("/{id}")
     public CategoryDto get(@PathVariable("id") Integer id){
@@ -43,11 +42,11 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<String> create(@RequestBody @Valid CategoryDto categoryDto,
                                          BindingResult bindingResult){
-        this.createValidator.validate(categoryDto, bindingResult);
+        if(bindingResult.hasErrors()) throw new ValidationException(collectErrorsToString(bindingResult.getFieldErrors()));
 
-        if(bindingResult.hasErrors()){
-            throw new ProductException(collectErrorsToString(bindingResult.getFieldErrors()));
-        }
+        this.createValidator.validate(categoryDto);
+
+        if(bindingResult.hasErrors()) throw new AlreadyExistsException("Category");
 
         this.categoryService.create(categoryDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("The category has been created");
@@ -57,11 +56,10 @@ public class CategoryController {
     public ResponseEntity<String> update(@PathVariable("id") Integer id,
                                          @RequestBody @Valid CategoryDto categoryDto,
                                          BindingResult bindingResult){
-        this.updateValidator.validate(categoryDto, bindingResult);
+        if(bindingResult.hasErrors()) throw new ValidationException(collectErrorsToString(bindingResult.getFieldErrors()));
 
-        if(bindingResult.hasErrors()){
-            throw new ProductException(collectErrorsToString(bindingResult.getFieldErrors()));
-        }
+        categoryDto.setId(id); //for update validation
+        this.updateValidator.validate(categoryDto);
 
         this.categoryService.update(id, categoryDto);
         return ResponseEntity.status(HttpStatus.OK).body("The category has been updated");
