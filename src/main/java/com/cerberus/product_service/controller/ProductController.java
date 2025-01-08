@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/products")
+@RequestMapping("/api/v1/products")
 public class ProductController {
 
     public final ProductService productService;
@@ -75,8 +75,8 @@ public class ProductController {
     }
 
     public void clearCache(ProductDto productDto){
-        this.clearCache.clearCategoryCache(productDto.getCategoryId());
-        this.clearCache.clearSubcategoryCache(productDto.getSubcategoryId());
-        this.clearCache.clearProductTypeCache(productDto.getProductTypeId());
+        this.clearCache.clearCategoryProducts(productDto.getCategoryId());
+        this.clearCache.clearSubcategoryProducts(productDto.getSubcategoryId());
+        this.clearCache.clearProductTypeProducts(productDto.getProductTypeId());
     }
 }

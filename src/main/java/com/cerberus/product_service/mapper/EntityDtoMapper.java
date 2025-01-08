@@ -8,6 +8,7 @@ import com.cerberus.product_service.model.Category;
 import com.cerberus.product_service.model.Product;
 import com.cerberus.product_service.model.ProductType;
 import com.cerberus.product_service.model.Subcategory;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,10 +16,10 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class EntityDtoMapper {
 
-    @Autowired
-    private ModelMapper mapper;
+    private final ModelMapper mapper;
 
     //Product
     public Product toEntity(ProductDto productDto){
@@ -29,7 +30,7 @@ public class EntityDtoMapper {
         return this.mapper.map(product, ProductDto.class);
     }
 
-    public List<ProductDto> toDto(List<Product> products){
+    public List<ProductDto> toDtoProductList(List<Product> products){
         return products.stream().map(this::toDto).toList();
     }
 
@@ -40,6 +41,10 @@ public class EntityDtoMapper {
 
     public CategoryDto toDto(Category category){
         return this.mapper.map(category, CategoryDto.class);
+    }
+
+    public List<SubcategoryDto> toDtoSubcategoryList(List<Subcategory> productTypes){
+        return productTypes.stream().map(this::toDto).toList();
     }
 
     //Subcategory
@@ -58,5 +63,9 @@ public class EntityDtoMapper {
 
     public ProductTypeDto toDto(ProductType productType){
         return this.mapper.map(productType, ProductTypeDto.class);
+    }
+
+    public List<ProductTypeDto> toDtoProductTypeList(List<ProductType> productTypes){
+        return productTypes.stream().map(this::toDto).toList();
     }
 }

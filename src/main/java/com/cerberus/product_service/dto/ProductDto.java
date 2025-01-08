@@ -5,23 +5,27 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import java.io.Serializable;
 
 @Data
-@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductDto implements Serializable {
+
+    private final static Long SerialVersionUID= 1L;
 
     private Integer id;
 
     @NotBlank(message = "The product title cannot be empty")
     @Length(min = 2, max = 60, message = "The number of characters of the product title must be from 2 to 60 characters")
     private String title;
+
+    @NotBlank(message = "The brand cannot be empty")
+    @Length(min = 2, max = 60, message = "The number of characters of the brand must be from 2 to 60 characters")
+    private String brand;
 
     @NotBlank(message = "The product description cannot be empty")
     @Length(max = 1000, message = "The maximum number of characters of the product description is 1000")

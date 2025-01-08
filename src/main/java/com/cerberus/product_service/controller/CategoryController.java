@@ -2,6 +2,8 @@ package com.cerberus.product_service.controller;
 
 import com.cerberus.product_service.dto.CategoryDto;
 import com.cerberus.product_service.dto.ProductDto;
+import com.cerberus.product_service.dto.ProductTypeDto;
+import com.cerberus.product_service.dto.SubcategoryDto;
 import com.cerberus.product_service.exception.AlreadyExistsException;
 import com.cerberus.product_service.exception.ValidationException;
 import com.cerberus.product_service.service.CategoryService;
@@ -20,7 +22,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/categories")
+@RequestMapping("/api/v1/categories")
 public class CategoryController {
 
     public final CategoryService categoryService;
@@ -37,6 +39,11 @@ public class CategoryController {
     @GetMapping("/{id}/products")
     public List<ProductDto> getProducts(@PathVariable("id") Integer id){
         return this.categoryService.getCategoryProducts(id);
+    }
+
+    @GetMapping("/{id}/subcategories")
+    public List<SubcategoryDto> getProductsTypes(@PathVariable("id") Integer id){
+        return this.categoryService.getSubcategories(id);
     }
 
     @PostMapping
