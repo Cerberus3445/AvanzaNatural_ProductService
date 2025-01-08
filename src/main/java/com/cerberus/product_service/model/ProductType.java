@@ -22,6 +22,10 @@ public class ProductType {
 
     private String title;
 
+    @ManyToOne
+    @JoinColumn(name = "subcategory_id", referencedColumnName = "id")
+    private Subcategory subcategory;
+
     @OneToMany(mappedBy = "productType")
     private List<Product> products;
 }

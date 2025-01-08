@@ -2,6 +2,8 @@ package com.cerberus.product_service.service;
 
 import com.cerberus.product_service.dto.CategoryDto;
 import com.cerberus.product_service.dto.ProductDto;
+import com.cerberus.product_service.dto.ProductTypeDto;
+import com.cerberus.product_service.dto.SubcategoryDto;
 import com.cerberus.product_service.model.Category;
 
 import java.util.List;
@@ -20,4 +22,6 @@ public interface CategoryService {
     void delete(Integer id);
 
     Optional<Category> getByTitle(String title);
+
+    List<SubcategoryDto> getSubcategories(Integer id);
 }

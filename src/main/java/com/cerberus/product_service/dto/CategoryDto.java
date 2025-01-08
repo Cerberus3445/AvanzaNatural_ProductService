@@ -3,19 +3,17 @@ package com.cerberus.product_service.dto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.validator.constraints.Length;
 
 import java.io.Serializable;
 
 @Data
-@SuperBuilder
-@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 public class CategoryDto implements Serializable {
+
+    private final static Long SerialVersionUID= 1L;
 
     private Integer id;
 

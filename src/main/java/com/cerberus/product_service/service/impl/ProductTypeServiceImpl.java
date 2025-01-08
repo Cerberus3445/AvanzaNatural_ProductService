@@ -2,11 +2,14 @@ package com.cerberus.product_service.service.impl;
 
 import com.cerberus.product_service.dto.ProductDto;
 import com.cerberus.product_service.dto.ProductTypeDto;
+import com.cerberus.product_service.dto.SubcategoryDto;
 import com.cerberus.product_service.exception.NotFoundException;
 import com.cerberus.product_service.mapper.EntityDtoMapper;
 import com.cerberus.product_service.model.ProductType;
+import com.cerberus.product_service.model.Subcategory;
 import com.cerberus.product_service.repository.ProductTypeRepository;
 import com.cerberus.product_service.service.ProductTypeService;
+import com.cerberus.product_service.util.CacheClear;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -27,6 +30,8 @@ public class ProductTypeServiceImpl implements ProductTypeService {
 
     private final EntityDtoMapper mapper;
 
+    private final CacheClear cacheClear;
+
     @Override
     @Cacheable(value = "productType", key = "#id")
     public ProductTypeDto get(Integer id) {
@@ -41,7 +46,7 @@ public class ProductTypeServiceImpl implements ProductTypeService {
         log.info("getProductTypeProducts {}", id);
         ProductType productType =  this.productTypeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("ProductType",id));
-        return mapper.toDto(productType.getProducts());
+        return mapper.toDtoProductList(productType.getProducts());
     }
 
     @Override
@@ -73,7 +78,9 @@ public class ProductTypeServiceImpl implements ProductTypeService {
     @Transactional
     public void delete(Integer id) {
         log.info("delete {}", id);
+        ProductTypeDto productTypeDto = get(id);
         this.productTypeRepository.deleteById(id);
+        this.cacheClear.clearProductsTypesFromSubcategory(productTypeDto.getSubcategoryId());
     }
 
     @Override

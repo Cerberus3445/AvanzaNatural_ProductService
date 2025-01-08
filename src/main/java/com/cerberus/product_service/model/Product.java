@@ -20,6 +20,8 @@ public class Product {
 
     private String title;
 
+    private String brand;
+
     private String description;
 
     private Double price;

@@ -2,9 +2,11 @@ package com.cerberus.product_service.service.impl;
 
 import com.cerberus.product_service.dto.CategoryDto;
 import com.cerberus.product_service.dto.ProductDto;
+import com.cerberus.product_service.dto.SubcategoryDto;
 import com.cerberus.product_service.exception.NotFoundException;
 import com.cerberus.product_service.mapper.EntityDtoMapper;
 import com.cerberus.product_service.model.Category;
+import com.cerberus.product_service.model.Subcategory;
 import com.cerberus.product_service.repository.CategoryRepository;
 import com.cerberus.product_service.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
         log.info("getCategoryProducts {}", id);
          Category category = this.categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Category",id));
-         return this.mapper.toDto(category.getProducts());
+         return this.mapper.toDtoProductList(category.getProducts());
     }
 
     @Override
@@ -79,5 +81,14 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Optional<Category> getByTitle(String title) {
         return this.categoryRepository.findByTitle(title);
+    }
+
+    @Override
+    @Cacheable(value = "getSubcategories", key = "#id")
+    public List<SubcategoryDto> getSubcategories(Integer id) {
+        log.info("getSubcategories {}", id);
+        Category category = this.categoryRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Category",id));
+        return this.mapper.toDtoSubcategoryList(category.getSubcategories());
     }
 }
