@@ -22,6 +22,8 @@ public class ProductType {
 
     private String title;
 
+    private String image;
+
     @ManyToOne
     @JoinColumn(name = "subcategory_id", referencedColumnName = "id")
     private Subcategory subcategory;
