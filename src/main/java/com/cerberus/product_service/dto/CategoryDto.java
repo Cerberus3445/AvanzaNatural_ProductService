@@ -17,6 +17,8 @@ public class CategoryDto implements Serializable {
 
     private Integer id;
 
+    private String image;
+
     @NotBlank(message = "The category title cannot be empty")
     @Length(min = 2, max = 40, message = "The number of characters of the category title must be from 2 to 40 characters")
     private String title;

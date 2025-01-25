@@ -23,11 +23,11 @@ import java.util.List;
 @RequestMapping("/api/v1/subcategories")
 public class SubcategoryController {
 
-    public final SubcategoryService subcategoryService;
+    private final SubcategoryService subcategoryService;
 
-    public final CreateValidator createValidator;
+    private final CreateValidator createValidator;
 
-    public final UpdateValidator updateValidator;
+    private final UpdateValidator updateValidator;
 
     @GetMapping("/{id}")
     public SubcategoryDto get(@PathVariable("id") Integer id){

@@ -7,6 +7,7 @@ import com.cerberus.product_service.dto.SubcategoryDto;
 import com.cerberus.product_service.exception.AlreadyExistsException;
 import com.cerberus.product_service.exception.ValidationException;
 import com.cerberus.product_service.service.CategoryService;
+import com.cerberus.product_service.service.StorageService;
 import com.cerberus.product_service.validator.CreateValidator;
 import com.cerberus.product_service.validator.UpdateValidator;
 import jakarta.validation.Valid;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,11 +27,13 @@ import java.util.List;
 @RequestMapping("/api/v1/categories")
 public class CategoryController {
 
-    public final CategoryService categoryService;
+    private final CategoryService categoryService;
 
-    public final CreateValidator createValidator;
+    private final CreateValidator createValidator;
 
-    public final UpdateValidator updateValidator;
+    private final UpdateValidator updateValidator;
+
+    private final StorageService storageService;
 
     @GetMapping("/{id}")
     public CategoryDto get(@PathVariable("id") Integer id){
@@ -48,7 +52,8 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<String> create(@RequestBody @Valid CategoryDto categoryDto,
-                                         BindingResult bindingResult){
+                                         BindingResult bindingResult,
+                                         @RequestParam(value = "image") MultipartFile image){
         if(bindingResult.hasErrors()) throw new ValidationException(collectErrorsToString(bindingResult.getFieldErrors()));
 
         this.createValidator.validate(categoryDto);
@@ -58,6 +63,13 @@ public class CategoryController {
         this.categoryService.create(categoryDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("The category has been created");
     }
+
+//    @PostMapping("/{id}/upload")
+//    public ResponseEntity<String> uploadFile(@PathVariable("id") Integer id,
+//                                             @RequestParam(value = "image") MultipartFile image) {
+//        String fileName = this.storageService.uploadFile(image);
+//
+//    }
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> update(@PathVariable("id") Integer id,

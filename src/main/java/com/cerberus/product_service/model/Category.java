@@ -21,6 +21,8 @@ public class Category {
 
     private String title;
 
+    private String image;
+
     @OneToMany(mappedBy = "category")
     private List<Subcategory> subcategories;
 

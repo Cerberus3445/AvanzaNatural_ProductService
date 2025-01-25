@@ -22,11 +22,11 @@ import java.util.List;
 @RequestMapping("/api/v1/products-types")
 public class ProductTypeController {
 
-    public final ProductTypeService productTypeService;
+    private final ProductTypeService productTypeService;
 
-    public final CreateValidator createValidator;
+    private final CreateValidator createValidator;
 
-    public final UpdateValidator updateValidator;
+    private final UpdateValidator updateValidator;
 
     @GetMapping("/{id}")
     public ProductTypeDto get(@PathVariable("id") Integer id){

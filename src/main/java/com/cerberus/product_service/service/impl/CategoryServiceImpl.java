@@ -9,12 +9,14 @@ import com.cerberus.product_service.model.Category;
 import com.cerberus.product_service.model.Subcategory;
 import com.cerberus.product_service.repository.CategoryRepository;
 import com.cerberus.product_service.service.CategoryService;
+import com.cerberus.product_service.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +30,8 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     private final EntityDtoMapper mapper;
+
+    private final StorageService storageService;
 
     @Override
     @Cacheable(value = "category", key = "#id")

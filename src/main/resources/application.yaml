@@ -14,7 +14,7 @@ spring:
       ddl-auto: validate
     show-sql: true
   flyway:
-    url: jdbc:postgresql://localhost:5432/avanza_natural
+    url: jdbc:postgresql://localhost:5432/avanza_natural #изменить на product
     user: postgres
     password: password
     baseline-on-migrate: true
@@ -23,5 +23,16 @@ spring:
     username: postgres
     password: password
     driver-class-name: org.postgresql.Driver
+  servlet:
+    multipart:
+      max-file-size: 40MB
 server:
   port: 7070
+aws:
+  bucket:
+    name: avanzanaturale
+  region:
+    static: eu-south-2
+  credentials:
+    access-key:
+    secret-key:
