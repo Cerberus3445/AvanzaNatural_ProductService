@@ -52,7 +52,10 @@ public class SubcategoryServiceImpl implements SubcategoryService {
     @Transactional
     public void create(SubcategoryDto subcategoryDto) {
         log.info("create {}", subcategoryDto);
-        this.subcategoryRepository.save(this.mapper.toEntity(subcategoryDto));
+        Subcategory createdSubcategory = this.subcategoryRepository.save(
+                this.mapper.toEntity(subcategoryDto)
+        );
+        this.cacheClear.clearSubcategoriesOfCertainCategory(createdSubcategory.getCategory().getId());
     }
 
     @Override
@@ -64,9 +67,12 @@ public class SubcategoryServiceImpl implements SubcategoryService {
             Subcategory updatedSubcategory = Subcategory.builder()
                     .id(id)
                     .title(subcategoryDto.getTitle())
+                    .category(subcategory.getCategory())
                     .products(subcategory.getProducts())
                     .build();
             this.subcategoryRepository.save(updatedSubcategory);
+
+            this.cacheClear.clearSubcategoriesOfCertainCategory(subcategory.getCategory().getId());
         }, () -> {
             throw new NotFoundException("Subcategory",id);
         });
@@ -77,10 +83,12 @@ public class SubcategoryServiceImpl implements SubcategoryService {
     @Transactional
     public void delete(Integer id) {
         log.info("delete {}", id);
-        SubcategoryDto subcategoryDto = get(id);
+        Subcategory subcategory = this.subcategoryRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Subcategory",id));
         this.subcategoryRepository.deleteById(id);
-        this.cacheClear.clearSubcategoriesFromCategory(subcategoryDto.getCategoryId());
-        this.cacheClear.clearProductsTypesFromSubcategory(id);
+
+        this.cacheClear.clearSubcategoriesOfCertainCategory(subcategory.getCategory().getId());
+        this.cacheClear.clearProductsTypesOfCertainSubcategory(id);
     }
 
     @Override
@@ -95,6 +103,8 @@ public class SubcategoryServiceImpl implements SubcategoryService {
         log.info("getProductsTypes {}", id);
         Subcategory subcategory = this.subcategoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Subcategory",id));
-        return this.mapper.toDtoProductTypeList(subcategory.getProductTypes());
+        return this.mapper.toDtoProductTypeList(
+                subcategory.getProductTypes()
+        );
     }
 }

@@ -23,13 +23,18 @@ public class CacheClear {
         log.info("clearProductTypeProducts {}", productTypeId);
     }
 
-    @CacheEvict(value = "getProductsTypes", key = "#subcategoryId")
-    public void clearProductsTypesFromSubcategory(Integer subcategoryId){
-        log.info("clearProductsTypesFromSubcategory {}", subcategoryId);
+    @CacheEvict(value = "getSubcategoriesOfCertainCategory", key = "#categoryId")
+    public void clearSubcategoriesOfCertainCategory(Integer categoryId){
+        log.info("clearSubcategoriesOfCertainCategory {}", categoryId);
     }
 
-    @CacheEvict(value = "getSubcategories", key = "#categoryId")
-    public void clearSubcategoriesFromCategory(Integer categoryId){
-        log.info("clearSubcategoriesFromCategory {}", categoryId);
+    @CacheEvict(value = "getProductsTypes", key = "#subcategoryId")
+    public void clearProductsTypesOfCertainSubcategory(Integer subcategoryId){
+        log.info("clearProductsTypesOfCertainSubcategory {}", subcategoryId);
+    }
+
+    @CacheEvict(value = "getAllCategories")
+    public void clearAllCategories(){
+        log.info("clearCategories");
     }
 }

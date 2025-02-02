@@ -10,6 +10,7 @@ import com.cerberus.product_service.model.Subcategory;
 import com.cerberus.product_service.repository.CategoryRepository;
 import com.cerberus.product_service.service.CategoryService;
 import com.cerberus.product_service.service.StorageService;
+import com.cerberus.product_service.util.CacheClear;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -33,12 +34,20 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final StorageService storageService;
 
+    private final CacheClear cacheClear;
+
     @Override
     @Cacheable(value = "category", key = "#id")
     public CategoryDto get(Integer id) {
         log.info("get {}", id);
         return this.mapper.toDto(this.categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Category",id)));
+    }
+
+    @Override
+    @Cacheable(value = "getAllCategories")
+    public List<CategoryDto> getAll() {
+        return this.mapper.toDtoCategoryList(this.categoryRepository.findAll());
     }
 
     @Override
@@ -55,6 +64,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void create(CategoryDto categoryDto) {
         log.info("create {}", categoryDto);
         this.categoryRepository.save(this.mapper.toEntity(categoryDto));
+        this.cacheClear.clearAllCategories();
     }
 
     @Override
@@ -72,6 +82,7 @@ public class CategoryServiceImpl implements CategoryService {
         }, () -> {
             throw new NotFoundException("Category",id);
         });
+        this.cacheClear.clearAllCategories();
     }
 
     @Override
@@ -80,6 +91,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void delete(Integer id) {
         log.info("delete {}", id);
         this.categoryRepository.deleteById(id);
+        this.cacheClear.clearAllCategories();
     }
 
     @Override
@@ -88,7 +100,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @Cacheable(value = "getSubcategories", key = "#id")
+    @Cacheable(value = "getSubcategoriesOfCertainCategory", key = "#id")
     public List<SubcategoryDto> getSubcategories(Integer id) {
         log.info("getSubcategories {}", id);
         Category category = this.categoryRepository.findById(id)

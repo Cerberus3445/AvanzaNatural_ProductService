@@ -1,6 +1,7 @@
 package com.cerberus.product_service.controller;
 
 import com.cerberus.product_service.service.StorageService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Storage Controller", description = "Работа с S3(сейчас не работает)")
 public class StorageController {
 
     private final StorageService service;

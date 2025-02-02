@@ -43,6 +43,10 @@ public class EntityDtoMapper {
         return this.mapper.map(category, CategoryDto.class);
     }
 
+    public List<CategoryDto> toDtoCategoryList(List<Category> categories){
+        return categories.stream().map(this::toDto).toList();
+    }
+
     public List<SubcategoryDto> toDtoSubcategoryList(List<Subcategory> productTypes){
         return productTypes.stream().map(this::toDto).toList();
     }

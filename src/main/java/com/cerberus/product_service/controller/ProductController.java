@@ -6,6 +6,8 @@ import com.cerberus.product_service.service.ProductService;
 import com.cerberus.product_service.util.CacheClear;
 import com.cerberus.product_service.validator.CreateValidator;
 import com.cerberus.product_service.validator.UpdateValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -20,6 +22,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/products")
+@Tag(name = "Product Controller", description = "Interaction with products")
 public class ProductController {
 
     private final ProductService productService;
@@ -31,11 +34,13 @@ public class ProductController {
     private final UpdateValidator updateValidator;
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get product")
     public ProductDto get(@PathVariable("id") Integer id){
         return this.productService.get(id);
     }
 
     @PostMapping
+    @Operation(summary = "Create product")
     public ResponseEntity<String> create(@RequestBody @Valid ProductDto productDto,
                                          BindingResult bindingResult){
         if(bindingResult.hasErrors()) throw new ValidationException(collectErrorsToString(bindingResult.getFieldErrors()));
@@ -49,6 +54,7 @@ public class ProductController {
     }
 
     @PatchMapping("/{id}")
+    @Operation(summary = "Update product")
     public ResponseEntity<String> update(@PathVariable("id") Integer id,
                                          @RequestBody @Valid ProductDto productDto,
                                          BindingResult bindingResult){
@@ -63,6 +69,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete product")
     public ResponseEntity<String> delete(@PathVariable("id") Integer id){
         ProductDto productDto = this.productService.get(id);
         this.productService.delete(id);

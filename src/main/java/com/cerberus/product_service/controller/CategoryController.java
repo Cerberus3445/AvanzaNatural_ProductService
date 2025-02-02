@@ -10,6 +10,8 @@ import com.cerberus.product_service.service.CategoryService;
 import com.cerberus.product_service.service.StorageService;
 import com.cerberus.product_service.validator.CreateValidator;
 import com.cerberus.product_service.validator.UpdateValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -18,13 +20,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/categories")
+@Tag(name = "Category Controller", description = "Interaction with categories")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -36,24 +38,35 @@ public class CategoryController {
     private final StorageService storageService;
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get category")
     public CategoryDto get(@PathVariable("id") Integer id){
         return this.categoryService.get(id);
     }
 
     @GetMapping("/{id}/products")
+    @Operation(summary = "Get all products of the category with {id}")
     public List<ProductDto> getProducts(@PathVariable("id") Integer id){
         return this.categoryService.getCategoryProducts(id);
     }
 
+    @GetMapping
+    @Operation(summary = "Get all categories")
+    public List<CategoryDto> getCategories(){
+        return this.categoryService.getAll();
+    }
+
     @GetMapping("/{id}/subcategories")
-    public List<SubcategoryDto> getProductsTypes(@PathVariable("id") Integer id){
+    @Operation(summary = "Get all subcategories of the category with {id}")
+    public List<SubcategoryDto> getSubcategories(@PathVariable("id") Integer id){
         return this.categoryService.getSubcategories(id);
     }
 
     @PostMapping
+    @Operation(summary = "Create category")
     public ResponseEntity<String> create(@RequestBody @Valid CategoryDto categoryDto,
-                                         BindingResult bindingResult,
-                                         @RequestParam(value = "image") MultipartFile image){
+                                         BindingResult bindingResult
+//                                         @RequestParam(value = "image") MultipartFile image
+    ){
         if(bindingResult.hasErrors()) throw new ValidationException(collectErrorsToString(bindingResult.getFieldErrors()));
 
         this.createValidator.validate(categoryDto);
@@ -72,6 +85,7 @@ public class CategoryController {
 //    }
 
     @PatchMapping("/{id}")
+    @Operation(summary = "Update category")
     public ResponseEntity<String> update(@PathVariable("id") Integer id,
                                          @RequestBody @Valid CategoryDto categoryDto,
                                          BindingResult bindingResult){
@@ -85,6 +99,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete category")
     public ResponseEntity<String> delete(@PathVariable("id") Integer id){
         this.categoryService.delete(id);
         return ResponseEntity.status(HttpStatus.OK).body("The category has been deleted");
