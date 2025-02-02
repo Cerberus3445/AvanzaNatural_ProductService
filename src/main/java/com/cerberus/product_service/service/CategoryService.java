@@ -12,6 +12,8 @@ public interface CategoryService {
 
     CategoryDto get(Integer id);
 
+    List<CategoryDto> getAll();
+
     List<ProductDto> getCategoryProducts(Integer categoryId);
 
     void create(CategoryDto categoryDto);

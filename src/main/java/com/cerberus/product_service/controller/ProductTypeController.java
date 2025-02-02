@@ -1,11 +1,14 @@
 package com.cerberus.product_service.controller;
 
+import com.cerberus.product_service.dto.CategoryDto;
 import com.cerberus.product_service.dto.ProductDto;
 import com.cerberus.product_service.dto.ProductTypeDto;
 import com.cerberus.product_service.exception.ValidationException;
 import com.cerberus.product_service.service.ProductTypeService;
 import com.cerberus.product_service.validator.CreateValidator;
 import com.cerberus.product_service.validator.UpdateValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -20,6 +23,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/products-types")
+@Tag(name = "ProductType Controller", description = "Interaction with products types")
 public class ProductTypeController {
 
     private final ProductTypeService productTypeService;
@@ -29,16 +33,19 @@ public class ProductTypeController {
     private final UpdateValidator updateValidator;
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get product type")
     public ProductTypeDto get(@PathVariable("id") Integer id){
         return this.productTypeService.get(id);
     }
 
     @GetMapping("/{id}/products")
+    @Operation(summary = "Get all product of the product type with {id}")
     public List<ProductDto> getProducts(@PathVariable("id") Integer id){
         return this.productTypeService.getProductTypeProducts(id);
     }
 
     @PostMapping
+    @Operation(summary = "Create product type")
     public ResponseEntity<String> create(@RequestBody @Valid ProductTypeDto productTypeDto,
                                          BindingResult bindingResult){
         if(bindingResult.hasErrors()) throw new ValidationException(collectErrorsToString(bindingResult.getFieldErrors()));
@@ -50,6 +57,7 @@ public class ProductTypeController {
     }
 
     @PatchMapping("/{id}")
+    @Operation(summary = "Update product type")
     public ResponseEntity<String> update(@PathVariable("id") Integer id,
                                          @RequestBody @Valid ProductTypeDto productTypeDto,
                                          BindingResult bindingResult){
@@ -63,6 +71,7 @@ public class ProductTypeController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete product type")
     public ResponseEntity<String> delete(@PathVariable("id") Integer id){
         this.productTypeService.delete(id);
         return ResponseEntity.status(HttpStatus.OK).body("The product type has been deleted");

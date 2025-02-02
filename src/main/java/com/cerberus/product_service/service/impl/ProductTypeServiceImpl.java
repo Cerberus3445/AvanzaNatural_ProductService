@@ -2,11 +2,9 @@ package com.cerberus.product_service.service.impl;
 
 import com.cerberus.product_service.dto.ProductDto;
 import com.cerberus.product_service.dto.ProductTypeDto;
-import com.cerberus.product_service.dto.SubcategoryDto;
 import com.cerberus.product_service.exception.NotFoundException;
 import com.cerberus.product_service.mapper.EntityDtoMapper;
 import com.cerberus.product_service.model.ProductType;
-import com.cerberus.product_service.model.Subcategory;
 import com.cerberus.product_service.repository.ProductTypeRepository;
 import com.cerberus.product_service.service.ProductTypeService;
 import com.cerberus.product_service.util.CacheClear;
@@ -65,9 +63,11 @@ public class ProductTypeServiceImpl implements ProductTypeService {
             ProductType updatedProductType = ProductType.builder()
                     .id(id)
                     .title(productTypeDto.getTitle())
+                    .subcategory(productType.getSubcategory())
                     .products(productType.getProducts())
                     .build();
             this.productTypeRepository.save(updatedProductType);
+            this.cacheClear.clearProductsTypesOfCertainSubcategory(productTypeDto.getSubcategoryId());
         }, () -> {
             throw new NotFoundException("ProductType",id);
         });
@@ -78,9 +78,10 @@ public class ProductTypeServiceImpl implements ProductTypeService {
     @Transactional
     public void delete(Integer id) {
         log.info("delete {}", id);
-        ProductTypeDto productTypeDto = get(id);
+        ProductType productType = this.productTypeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("ProductType",id));
         this.productTypeRepository.deleteById(id);
-        this.cacheClear.clearProductsTypesFromSubcategory(productTypeDto.getSubcategoryId());
+        this.cacheClear.clearProductsTypesOfCertainSubcategory(productType.getSubcategory().getId());
     }
 
     @Override

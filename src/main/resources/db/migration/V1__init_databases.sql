@@ -23,7 +23,6 @@ create table if not exists Products(
     title varchar(60) not null ,
     brand varchar(60) not null ,
     description varchar(1000) ,
-    image varchar ,
     price float not null ,
     in_stock boolean not null,
     category_id int references Categories(id) on delete cascade,

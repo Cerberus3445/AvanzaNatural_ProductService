@@ -50,6 +50,7 @@ public class ProductServiceImpl implements ProductService {
             Product updatedProduct = Product.builder()
                     .id(id)
                     .title(productDto.getTitle())
+                    .brand(productDto.getBrand())
                     .description(productDto.getDescription())
                     .price(productDto.getPrice())
                     .inStock(productDto.getInStock())

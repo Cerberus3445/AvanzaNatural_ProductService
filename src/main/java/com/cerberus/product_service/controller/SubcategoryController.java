@@ -7,6 +7,8 @@ import com.cerberus.product_service.exception.ValidationException;
 import com.cerberus.product_service.service.SubcategoryService;
 import com.cerberus.product_service.validator.CreateValidator;
 import com.cerberus.product_service.validator.UpdateValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -21,6 +23,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/subcategories")
+@Tag(name = "Subcategory Controller", description = "Interaction with subcategories")
 public class SubcategoryController {
 
     private final SubcategoryService subcategoryService;
@@ -30,21 +33,25 @@ public class SubcategoryController {
     private final UpdateValidator updateValidator;
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get subcategory")
     public SubcategoryDto get(@PathVariable("id") Integer id){
         return this.subcategoryService.get(id);
     }
 
     @GetMapping("/{id}/products")
+    @Operation(summary = "Get all products of the subcategory with {id}")
     public List<ProductDto> getProducts(@PathVariable("id") Integer id){
         return this.subcategoryService.getSubcategoryProducts(id);
     }
 
     @GetMapping("/{id}/products-types")
+    @Operation(summary = "Get all products types of the subcategory id with {id}")
     public List<ProductTypeDto> getProductsTypes(@PathVariable("id") Integer id){
         return this.subcategoryService.getProductsTypes(id);
     }
 
     @PostMapping
+    @Operation(summary = "Create subcategory")
     public ResponseEntity<String> create(@RequestBody @Valid SubcategoryDto subcategoryDto,
                                          BindingResult bindingResult){
         if(bindingResult.hasErrors()) throw new ValidationException(collectErrorsToString(bindingResult.getFieldErrors()));
@@ -56,6 +63,7 @@ public class SubcategoryController {
     }
 
     @PatchMapping("/{id}")
+    @Operation(summary = "Update subcategory")
     public ResponseEntity<String> update(@PathVariable("id") Integer id,
                                          @RequestBody @Valid SubcategoryDto subcategoryDto,
                                          BindingResult bindingResult){
@@ -69,6 +77,7 @@ public class SubcategoryController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete subcategory")
     public ResponseEntity<String> delete(@PathVariable("id") Integer id){
         this.subcategoryService.delete(id);
         return ResponseEntity.status(HttpStatus.OK).body("The subcategory has been deleted");

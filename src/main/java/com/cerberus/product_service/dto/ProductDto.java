@@ -38,9 +38,12 @@ public class ProductDto implements Serializable {
     @NotNull(message = "The product inStock status cannot be empty")
     private Boolean inStock;
 
+    @NotNull(message = "The categoryId cannot be null")
     private Integer categoryId;
 
+    @NotNull(message = "The subcategoryId cannot be null")
     private Integer subcategoryId;
 
+    @NotNull(message = "The productTypeId cannot be null")
     private Integer productTypeId;
 }
