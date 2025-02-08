@@ -8,31 +8,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-@Testcontainers
+@Import(TestcontainersConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ProducTypeTests {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
-
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.0")
-            .withExposedPorts(5432)
-            .withInitScript("init.sql"); //CHECK!!!
-
-    @Container
-    @ServiceConnection
-    static GenericContainer redis = new GenericContainer("redis:6.2")
-            .withExposedPorts(6379);
 
     @Test
     public void get(){
