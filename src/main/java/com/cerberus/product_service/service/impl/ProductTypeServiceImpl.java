@@ -3,7 +3,8 @@ package com.cerberus.product_service.service.impl;
 import com.cerberus.product_service.dto.ProductDto;
 import com.cerberus.product_service.dto.ProductTypeDto;
 import com.cerberus.product_service.exception.NotFoundException;
-import com.cerberus.product_service.mapper.EntityDtoMapper;
+import com.cerberus.product_service.mapper.ProductMapper;
+import com.cerberus.product_service.mapper.ProductTypeMapper;
 import com.cerberus.product_service.model.ProductType;
 import com.cerberus.product_service.repository.ProductTypeRepository;
 import com.cerberus.product_service.service.ProductTypeService;
@@ -26,7 +27,9 @@ public class ProductTypeServiceImpl implements ProductTypeService {
 
     private final ProductTypeRepository productTypeRepository;
 
-    private final EntityDtoMapper mapper;
+    private final ProductMapper productMapper;
+
+    private final ProductTypeMapper productTypeMapper;
 
     private final CacheClear cacheClear;
 
@@ -34,7 +37,7 @@ public class ProductTypeServiceImpl implements ProductTypeService {
     @Cacheable(value = "productType", key = "#id")
     public ProductTypeDto get(Integer id) {
         log.info("get {}", id);
-        return this.mapper.toDto(this.productTypeRepository.findById(id)
+        return this.productTypeMapper.toDto(this.productTypeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("ProductType",id)));
     }
 
@@ -44,14 +47,14 @@ public class ProductTypeServiceImpl implements ProductTypeService {
         log.info("getProductTypeProducts {}", id);
         ProductType productType =  this.productTypeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("ProductType",id));
-        return mapper.toDtoProductList(productType.getProducts());
+        return this.productMapper.toDto(productType.getProducts());
     }
 
     @Override
     @Transactional
     public void create(ProductTypeDto productTypeDto) {
         log.info("create {}", productTypeDto);
-        this.productTypeRepository.save(this.mapper.toEntity(productTypeDto));
+        this.productTypeRepository.save(this.productTypeMapper.toEntity(productTypeDto));
     }
 
     @Override

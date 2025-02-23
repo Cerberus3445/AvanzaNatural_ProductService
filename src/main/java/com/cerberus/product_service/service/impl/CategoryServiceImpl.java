@@ -4,9 +4,10 @@ import com.cerberus.product_service.dto.CategoryDto;
 import com.cerberus.product_service.dto.ProductDto;
 import com.cerberus.product_service.dto.SubcategoryDto;
 import com.cerberus.product_service.exception.NotFoundException;
-import com.cerberus.product_service.mapper.EntityDtoMapper;
+import com.cerberus.product_service.mapper.CategoryMapper;
+import com.cerberus.product_service.mapper.ProductMapper;
+import com.cerberus.product_service.mapper.SubcategoryMapper;
 import com.cerberus.product_service.model.Category;
-import com.cerberus.product_service.model.Subcategory;
 import com.cerberus.product_service.repository.CategoryRepository;
 import com.cerberus.product_service.service.CategoryService;
 import com.cerberus.product_service.service.StorageService;
@@ -17,7 +18,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +30,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    private final EntityDtoMapper mapper;
+    private final CategoryMapper categoryMapper;
+
+    private final ProductMapper productMapper;
+
+    private final SubcategoryMapper subcategoryMapper;
 
     private final StorageService storageService;
 
@@ -40,14 +44,14 @@ public class CategoryServiceImpl implements CategoryService {
     @Cacheable(value = "category", key = "#id")
     public CategoryDto get(Integer id) {
         log.info("get {}", id);
-        return this.mapper.toDto(this.categoryRepository.findById(id)
+        return this.categoryMapper.toDto(this.categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Category",id)));
     }
 
     @Override
     @Cacheable(value = "getAllCategories")
     public List<CategoryDto> getAll() {
-        return this.mapper.toDtoCategoryList(this.categoryRepository.findAll());
+        return this.categoryMapper.toDto(this.categoryRepository.findAll());
     }
 
     @Override
@@ -56,14 +60,14 @@ public class CategoryServiceImpl implements CategoryService {
         log.info("getCategoryProducts {}", id);
          Category category = this.categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Category",id));
-         return this.mapper.toDtoProductList(category.getProducts());
+         return this.productMapper.toDto(category.getProducts());
     }
 
     @Override
     @Transactional
     public void create(CategoryDto categoryDto) {
         log.info("create {}", categoryDto);
-        this.categoryRepository.save(this.mapper.toEntity(categoryDto));
+        this.categoryRepository.save(this.categoryMapper.toEntity(categoryDto));
         this.cacheClear.clearAllCategories();
     }
 
@@ -105,6 +109,6 @@ public class CategoryServiceImpl implements CategoryService {
         log.info("getSubcategories {}", id);
         Category category = this.categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Category",id));
-        return this.mapper.toDtoSubcategoryList(category.getSubcategories());
+        return this.subcategoryMapper.toDto(category.getSubcategories());
     }
 }

@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.util.IOUtils;
+import com.cerberus.product_service.props.StorageProperties;
 import com.cerberus.product_service.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +25,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class StorageServiceImpl implements StorageService {
 
-    @Value("${aws.bucket.name}")
-    private String bucketName;
+    private final StorageProperties storageProperties;
 
     private final AmazonS3 s3Client;
 
@@ -33,14 +33,14 @@ public class StorageServiceImpl implements StorageService {
     public String uploadFile(MultipartFile file) {
         File fileObj = convertMultiPartFileToFile(file);
         String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
+        this.s3Client.putObject(new PutObjectRequest(this.storageProperties.getBucketName(), fileName, fileObj));
         fileObj.delete();
         return fileName;
     }
 
     @Override
     public byte[] downloadFile(String fileName) {
-        S3Object s3Object = s3Client.getObject(bucketName, fileName);
+        S3Object s3Object = this.s3Client.getObject(this.storageProperties.getBucketName(), fileName);
         S3ObjectInputStream inputStream = s3Object.getObjectContent();
         try {
             BufferedImage originalImage = ImageIO.read(inputStream);
@@ -55,7 +55,7 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     public String deleteFile(String fileName) {
-        s3Client.deleteObject(bucketName, fileName);
+        this.s3Client.deleteObject(this.storageProperties.getBucketName(), fileName);
         return fileName + " removed ...";
     }
 
