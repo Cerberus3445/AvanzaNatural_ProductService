@@ -14,12 +14,13 @@ spring:
       ddl-auto: validate
     show-sql: true
   flyway:
-    url: jdbc:postgresql://localhost:5432/avanza_naturale #изменить на products
+    url: jdbc:postgresql://localhost:5432/avanza_natural
     user: postgres
     password: password
     baseline-on-migrate: true
+    default-schema: products
   datasource:
-    url: jdbc:postgresql://localhost:5432/avanza_naturale
+    url: jdbc:postgresql://localhost:5432/avanza_natural
     username: postgres
     password: password
     driver-class-name: org.postgresql.Driver
@@ -31,8 +32,11 @@ server:
 aws:
   bucket:
     name:
-  region:
-    static: ru-1
+  region: ru-1
   credentials:
     access-key:
     secret-key:
+
+web:
+  service:
+    uri: http://localhost:3000

@@ -4,7 +4,10 @@ import com.cerberus.product_service.dto.ProductDto;
 import com.cerberus.product_service.dto.ProductTypeDto;
 import com.cerberus.product_service.dto.SubcategoryDto;
 import com.cerberus.product_service.exception.NotFoundException;
-import com.cerberus.product_service.mapper.EntityDtoMapper;
+import com.cerberus.product_service.mapper.ProductMapper;
+import com.cerberus.product_service.mapper.ProductTypeMapper;
+import com.cerberus.product_service.mapper.SubcategoryMapper;
+import com.cerberus.product_service.model.Category;
 import com.cerberus.product_service.model.Subcategory;
 import com.cerberus.product_service.repository.SubcategoryRepository;
 import com.cerberus.product_service.service.SubcategoryService;
@@ -27,7 +30,11 @@ public class SubcategoryServiceImpl implements SubcategoryService {
 
     private final SubcategoryRepository subcategoryRepository;
 
-    private final EntityDtoMapper mapper;
+    private final ProductTypeMapper productTypeMapper;
+
+    private final ProductMapper productMapper;
+
+    private final SubcategoryMapper subcategoryMapper;
 
     private final CacheClear cacheClear;
 
@@ -35,7 +42,7 @@ public class SubcategoryServiceImpl implements SubcategoryService {
     @Cacheable(value = "subcategory", key = "#id")
     public SubcategoryDto get(Integer id) {
         log.info("get {}", id);
-        return this.mapper.toDto(this.subcategoryRepository.findById(id)
+        return this.subcategoryMapper.toDto(this.subcategoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Subcategory",id)));
     }
 
@@ -45,16 +52,15 @@ public class SubcategoryServiceImpl implements SubcategoryService {
         log.info("getSubcategoryProducts {}", subcategoryId);
         Subcategory subcategory = this.subcategoryRepository.findById(subcategoryId)
                 .orElseThrow(() -> new NotFoundException("Subcategory",subcategoryId));
-        return this.mapper.toDtoProductList(subcategory.getProducts());
+        return this.productMapper.toDto(subcategory.getProducts());
     }
 
     @Override
     @Transactional
     public void create(SubcategoryDto subcategoryDto) {
         log.info("create {}", subcategoryDto);
-        Subcategory createdSubcategory = this.subcategoryRepository.save(
-                this.mapper.toEntity(subcategoryDto)
-        );
+        Subcategory createdSubcategory = this.subcategoryMapper.toEntity(subcategoryDto);
+        this.subcategoryRepository.save(createdSubcategory);
         this.cacheClear.clearSubcategoriesOfCertainCategory(createdSubcategory.getCategory().getId());
     }
 
@@ -103,8 +109,6 @@ public class SubcategoryServiceImpl implements SubcategoryService {
         log.info("getProductsTypes {}", id);
         Subcategory subcategory = this.subcategoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Subcategory",id));
-        return this.mapper.toDtoProductTypeList(
-                subcategory.getProductTypes()
-        );
+        return this.productTypeMapper.toDto(subcategory.getProductTypes());
     }
 }

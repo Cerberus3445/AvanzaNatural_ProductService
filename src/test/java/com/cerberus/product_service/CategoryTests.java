@@ -2,15 +2,27 @@ package com.cerberus.product_service;
 
 import com.cerberus.product_service.dto.CategoryDto;
 import com.cerberus.product_service.dto.ProductDto;
+
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-@Import(TestcontainersConfiguration.class)
+import java.util.Collection;
+import java.util.Collections;
+
+@Slf4j
+@Import({TestcontainersConfiguration.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CategoryTests {
 
@@ -20,7 +32,6 @@ class CategoryTests {
     @Test
     public void get(){
         ResponseEntity<CategoryDto> responseEntity = this.testRestTemplate.getForEntity("/api/v1/categories/1", CategoryDto.class);
-
         Assertions.assertEquals("Water", responseEntity.getBody().getTitle());
         Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }

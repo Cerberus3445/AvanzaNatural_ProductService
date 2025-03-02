@@ -2,7 +2,7 @@ package com.cerberus.product_service.service.impl;
 
 import com.cerberus.product_service.dto.ProductDto;
 import com.cerberus.product_service.exception.NotFoundException;
-import com.cerberus.product_service.mapper.EntityDtoMapper;
+import com.cerberus.product_service.mapper.ProductMapper;
 import com.cerberus.product_service.model.Product;
 import com.cerberus.product_service.repository.ProductRepository;
 import com.cerberus.product_service.service.ProductService;
@@ -24,13 +24,13 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 
-    private final EntityDtoMapper mapper;
+    private final ProductMapper productMapper;
 
     @Override
     @Cacheable(value = "product", key = "#id")
     public ProductDto get(Integer id) {
         log.info("get {}", id);
-        return this.mapper.toDto(this.productRepository.findById(id)
+        return this.productMapper.toDto(this.productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Product",id)));
     }
 
@@ -38,7 +38,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public void create(ProductDto productDto) {
         log.info("create {}", productDto);
-        this.productRepository.save(this.mapper.toEntity(productDto));
+        this.productRepository.save(this.productMapper.toEntity(productDto));
     }
 
     @Override
