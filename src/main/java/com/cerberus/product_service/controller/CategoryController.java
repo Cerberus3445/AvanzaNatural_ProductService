@@ -2,7 +2,6 @@ package com.cerberus.product_service.controller;
 
 import com.cerberus.product_service.dto.CategoryDto;
 import com.cerberus.product_service.dto.ProductDto;
-import com.cerberus.product_service.dto.ProductTypeDto;
 import com.cerberus.product_service.dto.SubcategoryDto;
 import com.cerberus.product_service.exception.AlreadyExistsException;
 import com.cerberus.product_service.exception.ValidationException;

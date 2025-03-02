@@ -36,3 +36,7 @@ aws:
   credentials:
     access-key:
     secret-key:
+
+web:
+  service:
+    uri: http://localhost:3000
