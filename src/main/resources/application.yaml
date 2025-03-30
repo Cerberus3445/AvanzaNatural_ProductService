@@ -12,7 +12,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: true
   flyway:
     url: jdbc:postgresql://localhost:5432/avanza_natural
     user: postgres
@@ -26,7 +25,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   servlet:
     multipart:
-      max-file-size: 40MB
+      max-file-size: 1MB
 server:
   port: 7070
 aws:

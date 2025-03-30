@@ -26,7 +26,7 @@ public class JwtServiceImpl implements JwtService {
     public Boolean validateToken(String token) {
         Map<String, Object> claims = extractAllClaims(token);
         String role = claims.get("emailConfirmed").toString();
-        return Objects.equals(role, "false");
+        return Objects.equals(role, "true");
     }
 
     @Override

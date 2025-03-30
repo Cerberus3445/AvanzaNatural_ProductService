@@ -1,14 +1,12 @@
 package com.cerberus.product_service.service.impl;
 
-import com.cerberus.product_service.dto.ProductDto;
+import com.cerberus.product_service.cache.CacheClear;
 import com.cerberus.product_service.dto.ProductTypeDto;
 import com.cerberus.product_service.exception.NotFoundException;
-import com.cerberus.product_service.mapper.ProductMapper;
 import com.cerberus.product_service.mapper.ProductTypeMapper;
 import com.cerberus.product_service.model.ProductType;
 import com.cerberus.product_service.repository.ProductTypeRepository;
 import com.cerberus.product_service.service.ProductTypeService;
-import com.cerberus.product_service.util.CacheClear;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -16,7 +14,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -26,8 +23,6 @@ import java.util.Optional;
 public class ProductTypeServiceImpl implements ProductTypeService {
 
     private final ProductTypeRepository productTypeRepository;
-
-    private final ProductMapper productMapper;
 
     private final ProductTypeMapper productTypeMapper;
 
@@ -39,15 +34,6 @@ public class ProductTypeServiceImpl implements ProductTypeService {
         log.info("get {}", id);
         return this.productTypeMapper.toDto(this.productTypeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("ProductType",id)));
-    }
-
-    @Override
-    @Cacheable(value = "productTypeProducts", key = "#id")
-    public List<ProductDto> getProductTypeProducts(Integer id) {
-        log.info("getProductTypeProducts {}", id);
-        ProductType productType =  this.productTypeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("ProductType",id));
-        return this.productMapper.toDto(productType.getProducts());
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.cerberus.product_service.service.impl;
 
+import com.cerberus.product_service.cache.CacheClear;
 import com.cerberus.product_service.dto.CategoryDto;
 import com.cerberus.product_service.dto.ProductDto;
 import com.cerberus.product_service.dto.SubcategoryDto;
@@ -11,7 +12,6 @@ import com.cerberus.product_service.model.Category;
 import com.cerberus.product_service.repository.CategoryRepository;
 import com.cerberus.product_service.service.CategoryService;
 import com.cerberus.product_service.service.StorageService;
-import com.cerberus.product_service.util.CacheClear;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -55,19 +55,11 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @Cacheable(value = "categoryProducts", key = "#id")
-    public List<ProductDto> getCategoryProducts(Integer id) {
-        log.info("getCategoryProducts {}", id);
-         Category category = this.categoryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Category",id));
-         return this.productMapper.toDto(category.getProducts());
-    }
-
-    @Override
     @Transactional
     public void create(CategoryDto categoryDto) {
         log.info("create {}", categoryDto);
         this.categoryRepository.save(this.categoryMapper.toEntity(categoryDto));
+
         this.cacheClear.clearAllCategories();
     }
 
@@ -86,6 +78,7 @@ public class CategoryServiceImpl implements CategoryService {
         }, () -> {
             throw new NotFoundException("Category",id);
         });
+
         this.cacheClear.clearAllCategories();
     }
 
@@ -95,6 +88,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void delete(Integer id) {
         log.info("delete {}", id);
         this.categoryRepository.deleteById(id);
+
         this.cacheClear.clearAllCategories();
     }
 

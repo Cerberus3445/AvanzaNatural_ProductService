@@ -1,4 +1,4 @@
-package com.cerberus.product_service.util;
+package com.cerberus.product_service.cache;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -7,21 +7,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class CacheClear {
-
-    @CacheEvict(value = "categoryProducts", key = "#categoryId")
-    public void clearCategoryProducts(Integer categoryId){
-        log.info("clearCategoryProducts {}", categoryId);
-    }
-
-    @CacheEvict(value = "subcategoryProducts", key = "#subcategoryId")
-    public void clearSubcategoryProducts(Integer subcategoryId){
-        log.info("clearSubcategoryProducts {}", subcategoryId);
-    }
-
-    @CacheEvict(value = "productTypeProducts", key = "#productTypeId")
-    public void clearProductTypeProducts(Integer productTypeId){
-        log.info("clearProductTypeProducts {}", productTypeId);
-    }
 
     @CacheEvict(value = "getSubcategoriesOfCertainCategory", key = "#categoryId")
     public void clearSubcategoriesOfCertainCategory(Integer categoryId){
@@ -36,5 +21,20 @@ public class CacheClear {
     @CacheEvict(value = "getAllCategories")
     public void clearAllCategories(){
         log.info("clearCategories");
+    }
+
+    @CacheEvict(value = "paginationOfProductsByCategory", key = "#categoryId")
+    public void clearPaginationOfProductsByCategory(Integer categoryId){
+        log.info("clearPaginationOfProductsByCategory {}", categoryId);
+    }
+
+    @CacheEvict(value = "paginationOfProductsBySubcategory", key = "#subcategoryId")
+    public void clearPaginationOfProductsBySubcategory(Integer subcategoryId){
+        log.info("clearPaginationOfProductsBySubcategory {}", subcategoryId);
+    }
+
+    @CacheEvict(value = "paginationOfProductsByProductType", key = "#productTypeId")
+    public void clearPaginationOfProductsByProductType(Integer productTypeId){
+        log.info("clearPaginationOfProductsByProductType {}", productTypeId);
     }
 }
