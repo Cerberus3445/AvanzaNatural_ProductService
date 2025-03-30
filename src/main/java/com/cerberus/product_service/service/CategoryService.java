@@ -14,8 +14,6 @@ public interface CategoryService {
 
     List<CategoryDto> getAll();
 
-    List<ProductDto> getCategoryProducts(Integer categoryId);
-
     void create(CategoryDto categoryDto);
 
     void update(Integer id, CategoryDto categoryDto);

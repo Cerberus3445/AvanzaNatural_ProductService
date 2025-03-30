@@ -3,7 +3,6 @@ package com.cerberus.product_service.controller;
 import com.cerberus.product_service.dto.ProductDto;
 import com.cerberus.product_service.exception.ValidationException;
 import com.cerberus.product_service.service.ProductService;
-import com.cerberus.product_service.util.CacheClear;
 import com.cerberus.product_service.validator.CreateValidator;
 import com.cerberus.product_service.validator.UpdateValidator;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,8 +26,6 @@ public class ProductController {
 
     private final ProductService productService;
 
-    private final CacheClear clearCache;
-
     private final CreateValidator createValidator;
 
     private final UpdateValidator updateValidator;
@@ -37,6 +34,27 @@ public class ProductController {
     @Operation(summary = "Get product")
     public ProductDto get(@PathVariable("id") Integer id){
         return this.productService.get(id);
+    }
+
+    @GetMapping("/category/{categoryId}/pagination")
+    public List<ProductDto> getByCategoryWithPagination(@RequestParam(value = "page",defaultValue = "0") Integer page,
+                                            @RequestParam(value = "size",defaultValue = "10") Integer size,
+                                            @PathVariable("categoryId") Integer categoryId){
+        return this.productService.getByCategory(categoryId,page, size);
+    }
+
+    @GetMapping("/subcategory/{categoryId}/pagination")
+    public List<ProductDto> getBySubcategoryWithPagination(@RequestParam(value = "page",defaultValue = "0") Integer page,
+                                            @RequestParam(value = "size",defaultValue = "10") Integer size,
+                                            @PathVariable("categoryId") Integer categoryId){
+        return this.productService.getBySubcategory(categoryId,page, size);
+    }
+
+    @GetMapping("/product-type/{categoryId}/pagination")
+    public List<ProductDto> getByProductTypeWithPagination(@RequestParam(value = "page",defaultValue = "0") Integer page,
+                                            @RequestParam(value = "size",defaultValue = "10") Integer size,
+                                            @PathVariable("categoryId") Integer categoryId){
+        return this.productService.getByProductType(categoryId,page, size);
     }
 
     @PostMapping
@@ -49,7 +67,6 @@ public class ProductController {
 
         this.productService.create(productDto);
 
-        clearCache(productDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("The product has been created");
     }
 
@@ -64,26 +81,17 @@ public class ProductController {
         this.updateValidator.validate(productDto);
 
         this.productService.update(id, productDto);
-        clearCache(productDto);
         return ResponseEntity.status(HttpStatus.OK).body("The product has been updated");
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete product")
     public ResponseEntity<String> delete(@PathVariable("id") Integer id){
-        ProductDto productDto = this.productService.get(id);
         this.productService.delete(id);
-        clearCache(productDto);
         return ResponseEntity.status(HttpStatus.OK).body("The product has been deleted");
     }
 
     private String collectErrorsToString(List<FieldError> fieldErrors){
         return fieldErrors.stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList().toString();
-    }
-
-    public void clearCache(ProductDto productDto){
-        this.clearCache.clearCategoryProducts(productDto.getCategoryId());
-        this.clearCache.clearSubcategoryProducts(productDto.getSubcategoryId());
-        this.clearCache.clearProductTypeProducts(productDto.getProductTypeId());
     }
 }

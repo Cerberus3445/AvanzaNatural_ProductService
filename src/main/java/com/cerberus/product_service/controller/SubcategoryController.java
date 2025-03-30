@@ -38,12 +38,6 @@ public class SubcategoryController {
         return this.subcategoryService.get(id);
     }
 
-    @GetMapping("/{id}/products")
-    @Operation(summary = "Get all products of the subcategory with {id}")
-    public List<ProductDto> getProducts(@PathVariable("id") Integer id){
-        return this.subcategoryService.getSubcategoryProducts(id);
-    }
-
     @GetMapping("/{id}/products-types")
     @Operation(summary = "Get all products types of the subcategory id with {id}")
     public List<ProductTypeDto> getProductsTypes(@PathVariable("id") Integer id){

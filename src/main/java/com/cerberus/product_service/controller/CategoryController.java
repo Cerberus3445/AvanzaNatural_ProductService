@@ -6,7 +6,6 @@ import com.cerberus.product_service.dto.SubcategoryDto;
 import com.cerberus.product_service.exception.AlreadyExistsException;
 import com.cerberus.product_service.exception.ValidationException;
 import com.cerberus.product_service.service.CategoryService;
-import com.cerberus.product_service.service.StorageService;
 import com.cerberus.product_service.validator.CreateValidator;
 import com.cerberus.product_service.validator.UpdateValidator;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,18 +33,10 @@ public class CategoryController {
 
     private final UpdateValidator updateValidator;
 
-    private final StorageService storageService;
-
     @GetMapping("/{id}")
     @Operation(summary = "Get category")
     public CategoryDto get(@PathVariable("id") Integer id){
         return this.categoryService.get(id);
-    }
-
-    @GetMapping("/{id}/products")
-    @Operation(summary = "Get all products of the category with {id}")
-    public List<ProductDto> getProducts(@PathVariable("id") Integer id){
-        return this.categoryService.getCategoryProducts(id);
     }
 
     @GetMapping
@@ -63,9 +54,7 @@ public class CategoryController {
     @PostMapping
     @Operation(summary = "Create category")
     public ResponseEntity<String> create(@RequestBody @Valid CategoryDto categoryDto,
-                                         BindingResult bindingResult
-//                                         @RequestParam(value = "image") MultipartFile image
-    ){
+                                         BindingResult bindingResult){
         if(bindingResult.hasErrors()) throw new ValidationException(collectErrorsToString(bindingResult.getFieldErrors()));
 
         this.createValidator.validate(categoryDto);
@@ -75,13 +64,6 @@ public class CategoryController {
         this.categoryService.create(categoryDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("The category has been created");
     }
-
-//    @PostMapping("/{id}/upload")
-//    public ResponseEntity<String> uploadFile(@PathVariable("id") Integer id,
-//                                             @RequestParam(value = "image") MultipartFile image) {
-//        String fileName = this.storageService.uploadFile(image);
-//
-//    }
 
     @PatchMapping("/{id}")
     @Operation(summary = "Update category")

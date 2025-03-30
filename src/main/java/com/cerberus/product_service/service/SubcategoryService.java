@@ -1,6 +1,5 @@
 package com.cerberus.product_service.service;
 
-import com.cerberus.product_service.dto.ProductDto;
 import com.cerberus.product_service.dto.ProductTypeDto;
 import com.cerberus.product_service.dto.SubcategoryDto;
 import com.cerberus.product_service.model.Subcategory;
@@ -12,7 +11,6 @@ public interface SubcategoryService {
 
     SubcategoryDto get(Integer id);
 
-    List<ProductDto> getSubcategoryProducts(Integer subcategoryId);
 
     void create(SubcategoryDto subcategoryDto);
 

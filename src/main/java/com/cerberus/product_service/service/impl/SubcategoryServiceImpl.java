@@ -1,17 +1,14 @@
 package com.cerberus.product_service.service.impl;
 
-import com.cerberus.product_service.dto.ProductDto;
+import com.cerberus.product_service.cache.CacheClear;
 import com.cerberus.product_service.dto.ProductTypeDto;
 import com.cerberus.product_service.dto.SubcategoryDto;
 import com.cerberus.product_service.exception.NotFoundException;
-import com.cerberus.product_service.mapper.ProductMapper;
 import com.cerberus.product_service.mapper.ProductTypeMapper;
 import com.cerberus.product_service.mapper.SubcategoryMapper;
-import com.cerberus.product_service.model.Category;
 import com.cerberus.product_service.model.Subcategory;
 import com.cerberus.product_service.repository.SubcategoryRepository;
 import com.cerberus.product_service.service.SubcategoryService;
-import com.cerberus.product_service.util.CacheClear;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -32,8 +29,6 @@ public class SubcategoryServiceImpl implements SubcategoryService {
 
     private final ProductTypeMapper productTypeMapper;
 
-    private final ProductMapper productMapper;
-
     private final SubcategoryMapper subcategoryMapper;
 
     private final CacheClear cacheClear;
@@ -44,15 +39,6 @@ public class SubcategoryServiceImpl implements SubcategoryService {
         log.info("get {}", id);
         return this.subcategoryMapper.toDto(this.subcategoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Subcategory",id)));
-    }
-
-    @Override
-    @Cacheable(value = "subcategoryProducts", key = "#subcategoryId")
-    public List<ProductDto> getSubcategoryProducts(Integer subcategoryId) {
-        log.info("getSubcategoryProducts {}", subcategoryId);
-        Subcategory subcategory = this.subcategoryRepository.findById(subcategoryId)
-                .orElseThrow(() -> new NotFoundException("Subcategory",subcategoryId));
-        return this.productMapper.toDto(subcategory.getProducts());
     }
 
     @Override

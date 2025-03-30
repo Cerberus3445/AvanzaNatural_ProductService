@@ -1,5 +1,6 @@
 package com.cerberus.product_service;
 
+import com.cerberus.product_service.dto.ProductTypeDto;
 import com.cerberus.product_service.dto.SubcategoryDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -12,7 +13,7 @@ import org.springframework.http.*;
 
 @Import(TestcontainersConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class SubcategoryTests {
+class ProductTypeTests {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
@@ -27,102 +28,97 @@ class SubcategoryTests {
 
     @Test
     public void get(){
-        ResponseEntity<SubcategoryDto> responseEntity = this.testRestTemplate.getForEntity("/api/v1/subcategories/1", SubcategoryDto.class);
+        ResponseEntity<ProductTypeDto> responseEntity = this.testRestTemplate.getForEntity("/api/v1/products-types/1", ProductTypeDto.class);
 
-        Assertions.assertEquals("T-shirts", responseEntity.getBody().getTitle());
+        Assertions.assertEquals("Orange T-Shirt", responseEntity.getBody().getTitle());
         Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
     @Test
     public void create() {
-        HttpEntity<SubcategoryDto> subcategoryDto = new HttpEntity<>(new SubcategoryDto(null, 1, "Image link","Cheese"),headers);
+        HttpEntity<ProductTypeDto> productTypeDto = new HttpEntity<>(new ProductTypeDto(null, 1, "Image link","Cheese"), headers);
         ResponseEntity<String> responseEntity = this.testRestTemplate.exchange(
-                "/api/v1/subcategories",
-                HttpMethod.POST,
-                subcategoryDto,
+                "/api/v1/products-types"
+                ,HttpMethod.POST,
+                productTypeDto,
                 String.class
         );
 
-        Assertions.assertEquals("The subcategory has been created", responseEntity.getBody());
+        Assertions.assertEquals("The product type has been created", responseEntity.getBody());
         Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
     @Test
     public void update(){
-        HttpEntity<SubcategoryDto> categoryDto = new HttpEntity<>(new SubcategoryDto(null, 1,"Image link","New Subcategory"), headers);
-        ResponseEntity<String> patchForObject = this.testRestTemplate.exchange(
-                "/api/v1/subcategories/2",
+        HttpEntity<ProductTypeDto> productTypeDto = new HttpEntity<>(new ProductTypeDto(null, 1, "Image link","New ProductType"), headers);
+        this.testRestTemplate.exchange(
+                "/api/v1/products-types/2",
                 HttpMethod.PATCH,
-                categoryDto,
+                productTypeDto,
                 String.class
         );
 
-        Assertions.assertEquals("The subcategory has been updated", patchForObject.getBody());
-
-        ResponseEntity<SubcategoryDto> getForEntity = this.testRestTemplate.getForEntity("/api/v1/subcategories/2", SubcategoryDto.class);
-
-        Assertions.assertEquals("New Subcategory",getForEntity.getBody().getTitle());
+        ResponseEntity<SubcategoryDto> getForEntity = this.testRestTemplate.getForEntity("/api/v1/products-types/2", SubcategoryDto.class);
+        Assertions.assertEquals("New ProductType",getForEntity.getBody().getTitle());
     }
 
     @Test
     public void delete(){
+        HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
         ResponseEntity<String> deleteResponseEntity = this.testRestTemplate.exchange(
-                "/api/v1/subcategories/3",
+                "/api/v1/products-types/3",
                 HttpMethod.DELETE,
-                new HttpEntity<>(headers),
+                httpEntity,
                 String.class
         );
-        Assertions.assertEquals("The subcategory has been deleted", deleteResponseEntity.getBody());
+        Assertions.assertEquals("The product type has been deleted",deleteResponseEntity.getBody());
+        ResponseEntity<ProductTypeDto> getResponseEntity = this.testRestTemplate.getForEntity("/api/v1/products-types/3", ProductTypeDto.class);
 
-        ResponseEntity<SubcategoryDto> responseEntity = this.testRestTemplate.getForEntity("/api/v1/subcategories/3", SubcategoryDto.class);
-
-        Assertions.assertTrue(responseEntity.getStatusCode().is4xxClientError());
+        Assertions.assertTrue(getResponseEntity.getStatusCode().is4xxClientError());
     }
 
     @Test
     public void notFoundException(){
-        HttpEntity<SubcategoryDto> subcategoryDto = new HttpEntity<>(new SubcategoryDto(null, 1,"Image link","New Chocolate 1"), headers);
-        ResponseEntity<SubcategoryDto> responseEntity = this.testRestTemplate.getForEntity("/api/v1/subcategories/10000000", SubcategoryDto.class);
-
-        ResponseEntity<ProblemDetail> patchForObject = this.testRestTemplate.exchange(
-                "/api/v1/subcategories/10000000",
+        HttpEntity<ProductTypeDto> httpEntity = new HttpEntity<>(new ProductTypeDto(null, 1,"Image link","New Chocolate 1"), headers);
+        ResponseEntity<ProblemDetail> getResponseEntity = this.testRestTemplate.getForEntity("/api/v1/products-types/10000000", ProblemDetail.class);
+        ResponseEntity<ProblemDetail> patchResponseEntity = this.testRestTemplate.exchange(
+                "/api/v1/products-types/10000000",
                 HttpMethod.PATCH,
-                subcategoryDto,
+                httpEntity,
                 ProblemDetail.class
         );
-
-        Assertions.assertTrue(responseEntity.getStatusCode().is4xxClientError());
-        Assertions.assertEquals("Subcategory with 10000000 id not found.", patchForObject.getBody().getDetail());
+        Assertions.assertEquals("ProductType with 10000000 id not found.", getResponseEntity.getBody().getDetail());
+        Assertions.assertTrue(patchResponseEntity.getStatusCode().is4xxClientError());
     }
 
     @Test
     public void createValidationException(){
-        HttpEntity<SubcategoryDto> productTypeDtoWithEmptyTitle = new HttpEntity<>(new SubcategoryDto(null, 1,"Image link",""), headers);
-        HttpEntity<SubcategoryDto> productTypeDtoWithSmallNumberOfCharacters = new HttpEntity<>(new SubcategoryDto(null, 1,"Image link","s"), headers);
-        HttpEntity<SubcategoryDto> productTypeDtoWithLargeNumberOfCharacters = new HttpEntity<>(new SubcategoryDto(null, 1,"Image link", """
+        HttpEntity<ProductTypeDto> productTypeDtoWithEmptyTitle = new HttpEntity<>(new ProductTypeDto(null, 1,"Image link",""), headers);
+        HttpEntity<ProductTypeDto> productTypeDtoWithSmallNumberOfCharacters = new HttpEntity<>(new ProductTypeDto(null, 1,"Image link","s"), headers);
+        HttpEntity<ProductTypeDto> productTypeDtoWithLargeNumberOfCharacters = new HttpEntity<>(new ProductTypeDto(null, 1,"Image link", """
                 vdfsdfsdffffffffqfisdfjf98jh89fgh39487hfughudfdghndwfuiyghdd8dufghd8wfghwd7f98gh7ed98grhydf7hgwd8yufghdfuighd"""), headers);
-        HttpEntity<SubcategoryDto> productTypeDtoWithNotValidCategoryId = new HttpEntity<>(new SubcategoryDto(null, null,"Image link", "Title"), headers);
+        HttpEntity<ProductTypeDto> productTypeDtoWithNotValidCategoryId = new HttpEntity<>(new ProductTypeDto(null, null,"Image link", "Title"), headers);
 
         ResponseEntity<ProblemDetail> responseEntityEmptyTitle = this.testRestTemplate.exchange(
-                "/api/v1/subcategories",
+                "/api/v1/products-types",
                 HttpMethod.POST,
                 productTypeDtoWithEmptyTitle,
                 ProblemDetail.class
         );
         ResponseEntity<ProblemDetail> responseEntitySmallNumberOfCharacters = this.testRestTemplate.exchange(
-                "/api/v1/subcategories",
+                "/api/v1/products-types",
                 HttpMethod.POST,
                 productTypeDtoWithSmallNumberOfCharacters,
                 ProblemDetail.class
         );
         ResponseEntity<ProblemDetail> responseEntityLargeNumberOfCharacters = this.testRestTemplate.exchange(
-                "/api/v1/subcategories",
+                "/api/v1/products-types",
                 HttpMethod.POST,
                 productTypeDtoWithLargeNumberOfCharacters,
                 ProblemDetail.class
         );
         ResponseEntity<ProblemDetail> responseEntityNotValidCategoryId = this.testRestTemplate.exchange(
-                "/api/v1/subcategories",
+                "/api/v1/products-types",
                 HttpMethod.POST,
                 productTypeDtoWithNotValidCategoryId,
                 ProblemDetail.class
@@ -134,39 +130,39 @@ class SubcategoryTests {
         Assertions.assertTrue(responseEntityNotValidCategoryId.getStatusCode().is4xxClientError());
 
         Assertions.assertEquals("Validation exception", responseEntityEmptyTitle.getBody().getTitle());
-        Assertions.assertEquals("[The number of characters of the subcategory title must be from 2 to 40 characters]", responseEntitySmallNumberOfCharacters.getBody().getDetail());
-        Assertions.assertEquals("[The number of characters of the subcategory title must be from 2 to 40 characters]", responseEntityLargeNumberOfCharacters.getBody().getDetail());
-        Assertions.assertEquals("[The categoryId cannot be empty]", responseEntityNotValidCategoryId.getBody().getDetail());
+        Assertions.assertEquals("[The number of characters of the product type title must be from 2 to 40 characters]", responseEntitySmallNumberOfCharacters.getBody().getDetail());
+        Assertions.assertEquals("[The number of characters of the product type title must be from 2 to 40 characters]", responseEntityLargeNumberOfCharacters.getBody().getDetail());
+        Assertions.assertEquals("[The subcategoryId cannot be empty]", responseEntityNotValidCategoryId.getBody().getDetail());
     }
 
     @Test
     public void updateValidationException(){
-        HttpEntity<SubcategoryDto> productTypeDtoWithEmptyTitle = new HttpEntity<>(new SubcategoryDto(null, 1,"Image link",""), headers);
-        HttpEntity<SubcategoryDto> productTypeDtoWithSmallNumberOfCharacters = new HttpEntity<>(new SubcategoryDto(null, 1,"Image link","s"), headers);
-        HttpEntity<SubcategoryDto> productTypeDtoWithLargeNumberOfCharacters = new HttpEntity<>(new SubcategoryDto(null, 1,"Image link", """
+        HttpEntity<ProductTypeDto> productTypeDtoWithEmptyTitle = new HttpEntity<>(new ProductTypeDto(null, 1,"Image link",""), headers);
+        HttpEntity<ProductTypeDto> productTypeDtoWithSmallNumberOfCharacters = new HttpEntity<>(new ProductTypeDto(null, 1,"Image link","s"), headers);
+        HttpEntity<ProductTypeDto> productTypeDtoWithLargeNumberOfCharacters = new HttpEntity<>(new ProductTypeDto(null, 1,"Image link", """
                 vdfsdfsdffffffffqfisdfjf98jh89fgh39487hfughudfdghndwfuiyghdd8dufghd8wfghwd7f98gh7ed98grhydf7hgwd8yufghdfuighd"""), headers);
-        HttpEntity<SubcategoryDto> productTypeDtoWithNotValidCategoryId = new HttpEntity<>(new SubcategoryDto(null, null,"Image link", "Title"), headers);
+        HttpEntity<ProductTypeDto> productTypeDtoWithNotValidCategoryId = new HttpEntity<>(new ProductTypeDto(null, null,"Image link", "Title"), headers);
 
         ResponseEntity<ProblemDetail> responseEntityEmptyTitle = this.testRestTemplate.exchange(
-                "/api/v1/subcategories/1",
+                "/api/v1/products-types/1",
                 HttpMethod.PATCH,
                 productTypeDtoWithEmptyTitle,
                 ProblemDetail.class
         );
         ResponseEntity<ProblemDetail> responseEntitySmallNumberOfCharacters = this.testRestTemplate.exchange(
-                "/api/v1/subcategories/1",
+                "/api/v1/products-types/1",
                 HttpMethod.PATCH,
                 productTypeDtoWithSmallNumberOfCharacters,
                 ProblemDetail.class
         );
         ResponseEntity<ProblemDetail> responseEntityLargeNumberOfCharacters = this.testRestTemplate.exchange(
-                "/api/v1/subcategories/1",
+                "/api/v1/products-types/1",
                 HttpMethod.PATCH,
                 productTypeDtoWithLargeNumberOfCharacters,
                 ProblemDetail.class
         );
         ResponseEntity<ProblemDetail> responseEntityNotValidCategoryId = this.testRestTemplate.exchange(
-                "/api/v1/subcategories/1",
+                "/api/v1/products-types/1",
                 HttpMethod.PATCH,
                 productTypeDtoWithNotValidCategoryId,
                 ProblemDetail.class
@@ -178,9 +174,9 @@ class SubcategoryTests {
         Assertions.assertTrue(responseEntityNotValidCategoryId.getStatusCode().is4xxClientError());
 
         Assertions.assertEquals("Validation exception", responseEntityEmptyTitle.getBody().getTitle());
-        Assertions.assertEquals("[The number of characters of the subcategory title must be from 2 to 40 characters]", responseEntitySmallNumberOfCharacters.getBody().getDetail());
-        Assertions.assertEquals("[The number of characters of the subcategory title must be from 2 to 40 characters]", responseEntityLargeNumberOfCharacters.getBody().getDetail());
-        Assertions.assertEquals("[The categoryId cannot be empty]", responseEntityNotValidCategoryId.getBody().getDetail());
+        Assertions.assertEquals("[The number of characters of the product type title must be from 2 to 40 characters]", responseEntitySmallNumberOfCharacters.getBody().getDetail());
+        Assertions.assertEquals("[The number of characters of the product type title must be from 2 to 40 characters]", responseEntityLargeNumberOfCharacters.getBody().getDetail());
+        Assertions.assertEquals("[The subcategoryId cannot be empty]", responseEntityNotValidCategoryId.getBody().getDetail());
     }
 
 }

@@ -38,12 +38,6 @@ public class ProductTypeController {
         return this.productTypeService.get(id);
     }
 
-    @GetMapping("/{id}/products")
-    @Operation(summary = "Get all product of the product type with {id}")
-    public List<ProductDto> getProducts(@PathVariable("id") Integer id){
-        return this.productTypeService.getProductTypeProducts(id);
-    }
-
     @PostMapping
     @Operation(summary = "Create product type")
     public ResponseEntity<String> create(@RequestBody @Valid ProductTypeDto productTypeDto,
