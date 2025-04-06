@@ -62,7 +62,7 @@ public class CategoryController {
         if(bindingResult.hasErrors()) throw new AlreadyExistsException("Category");
 
         this.categoryService.create(categoryDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("The category has been created");
+        return ResponseEntity.status(HttpStatus.CREATED).body("The category has been created.");
     }
 
     @PatchMapping("/{id}")
@@ -76,17 +76,17 @@ public class CategoryController {
         this.updateValidator.validate(categoryDto);
 
         this.categoryService.update(id, categoryDto);
-        return ResponseEntity.status(HttpStatus.OK).body("The category has been updated");
+        return ResponseEntity.status(HttpStatus.OK).body("The category has been updated.");
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete category")
     public ResponseEntity<String> delete(@PathVariable("id") Integer id){
         this.categoryService.delete(id);
-        return ResponseEntity.status(HttpStatus.OK).body("The category has been deleted");
+        return ResponseEntity.status(HttpStatus.OK).body("The category has been deleted.");
     }
 
     private String collectErrorsToString(List<FieldError> fieldErrors){
-        return fieldErrors.stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList().toString();
+        return fieldErrors.stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList().toString().replace("[", "").replace("]", "");
     }
 }
