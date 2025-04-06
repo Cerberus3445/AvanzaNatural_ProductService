@@ -1,8 +1,12 @@
 package com.cerberus.product_service;
 
+import com.cerberus.product_service.client.UserClient;
 import com.cerberus.product_service.dto.CategoryDto;
-import com.cerberus.product_service.dto.ProductDto;
 
+import com.cerberus.product_service.dto.Role;
+import com.cerberus.product_service.dto.UserDto;
+import com.cerberus.product_service.model.UserCredential;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +14,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.*;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import java.util.Optional;
+
+import static org.mockito.Mockito.when;
+
 
 @Slf4j
 @Import({TestcontainersConfiguration.class})
@@ -19,12 +29,22 @@ class CategoryTests {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
+    @MockitoBean
+    private static UserClient userClient;
+
     private static final HttpHeaders headers = new HttpHeaders();
 
     @BeforeAll
     public static void generateJwt(){
         JwtCreator jwtCreator = new JwtCreator();
         headers.setBearerAuth(jwtCreator.generateToken());
+    }
+
+    @BeforeEach
+    public void mockUserClient(){
+        when(userClient.getUserByEmail("admin@gmail.com")).thenReturn(
+                Optional.of(new UserDto(1L, "firstName", "lastName", "admin@gmail.com", "password", true, Role.ROLE_ADMIN))
+        );
     }
 
     @Test
@@ -45,7 +65,7 @@ class CategoryTests {
                 String.class
         );
 
-        Assertions.assertEquals("The category has been created", responseEntity.getBody());
+        Assertions.assertEquals("The category has been created.", responseEntity.getBody());
         Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
@@ -58,7 +78,7 @@ class CategoryTests {
                 httpEntity,
                 String.class
         );
-        Assertions.assertEquals("The category has been updated", patchForObject.getBody());
+        Assertions.assertEquals("The category has been updated.", patchForObject.getBody());
 
         ResponseEntity<CategoryDto> getForEntity = this.testRestTemplate.getForEntity("/api/v1/categories/2", CategoryDto.class);
         Assertions.assertEquals("New Category",getForEntity.getBody().getTitle());
@@ -66,16 +86,13 @@ class CategoryTests {
 
     @Test
     public void delete(){
-        HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
-        this.testRestTemplate.exchange(
+        ResponseEntity<String> deleteResponseEntity = this.testRestTemplate.exchange(
                 "/api/v1/categories/3",
                 HttpMethod.DELETE,
-                httpEntity,
+                new HttpEntity<>(headers),
                 String.class
         );
-        ResponseEntity<CategoryDto> responseEntity = this.testRestTemplate.getForEntity("/api/v1/categories/3", CategoryDto.class);
-
-        Assertions.assertTrue(responseEntity.getStatusCode().is4xxClientError());
+        Assertions.assertEquals("The category has been deleted.",deleteResponseEntity.getBody());
     }
 
     @Test
@@ -124,8 +141,8 @@ class CategoryTests {
         Assertions.assertTrue(responseEntityLargeNumberOfCharacters.getStatusCode().is4xxClientError());
 
         Assertions.assertEquals("Validation exception", responseEntityEmptyTitle.getBody().getTitle());
-        Assertions.assertEquals("[The number of characters of the category title must be from 2 to 40 characters]", responseEntitySmallNumberOfCharacters.getBody().getDetail());
-        Assertions.assertEquals("[The number of characters of the category title must be from 2 to 40 characters]", responseEntityLargeNumberOfCharacters.getBody().getDetail());
+        Assertions.assertEquals("The number of characters of the category title must be from 2 to 40 characters", responseEntitySmallNumberOfCharacters.getBody().getDetail());
+        Assertions.assertEquals("The number of characters of the category title must be from 2 to 40 characters", responseEntityLargeNumberOfCharacters.getBody().getDetail());
     }
 
     @Test
@@ -155,8 +172,8 @@ class CategoryTests {
         );
 
         Assertions.assertEquals("Validation exception", responseEntityEmptyTitle.getBody().getTitle());
-        Assertions.assertEquals("[The number of characters of the category title must be from 2 to 40 characters]", responseEntitySmallNumberOfCharacters.getBody().getDetail());
-        Assertions.assertEquals("[The number of characters of the category title must be from 2 to 40 characters]", responseEntityLargeNumberOfCharacters.getBody().getDetail());
+        Assertions.assertEquals("The number of characters of the category title must be from 2 to 40 characters", responseEntitySmallNumberOfCharacters.getBody().getDetail());
+        Assertions.assertEquals("The number of characters of the category title must be from 2 to 40 characters", responseEntityLargeNumberOfCharacters.getBody().getDetail());
     }
 
 }

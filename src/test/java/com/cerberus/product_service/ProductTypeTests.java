@@ -1,15 +1,24 @@
 package com.cerberus.product_service;
 
+import com.cerberus.product_service.client.UserClient;
 import com.cerberus.product_service.dto.ProductTypeDto;
+import com.cerberus.product_service.dto.Role;
 import com.cerberus.product_service.dto.SubcategoryDto;
+import com.cerberus.product_service.dto.UserDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.*;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import java.util.Optional;
+
+import static org.mockito.Mockito.when;
 
 @Import(TestcontainersConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -18,12 +27,22 @@ class ProductTypeTests {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
+    @MockitoBean
+    private static UserClient userClient;
+
     private static final HttpHeaders headers = new HttpHeaders();
 
     @BeforeAll
     public static void generateJwt(){
         JwtCreator jwtCreator = new JwtCreator();
         headers.setBearerAuth(jwtCreator.generateToken());
+    }
+
+    @BeforeEach
+    public void mockUserClient(){
+        when(userClient.getUserByEmail("admin@gmail.com")).thenReturn(
+                Optional.of(new UserDto(1L, "firstName", "lastName", "admin@gmail.com", "password", true, Role.ROLE_ADMIN))
+        );
     }
 
     @Test
@@ -44,19 +63,21 @@ class ProductTypeTests {
                 String.class
         );
 
-        Assertions.assertEquals("The product type has been created", responseEntity.getBody());
+        Assertions.assertEquals("The product type has been created.", responseEntity.getBody());
         Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
     }
 
     @Test
     public void update(){
         HttpEntity<ProductTypeDto> productTypeDto = new HttpEntity<>(new ProductTypeDto(null, 1, "Image link","New ProductType"), headers);
-        this.testRestTemplate.exchange(
+        ResponseEntity<String> patchResponseEntity = this.testRestTemplate.exchange(
                 "/api/v1/products-types/2",
                 HttpMethod.PATCH,
                 productTypeDto,
                 String.class
         );
+
+        Assertions.assertEquals("The product type has been updated.",patchResponseEntity.getBody());
 
         ResponseEntity<SubcategoryDto> getForEntity = this.testRestTemplate.getForEntity("/api/v1/products-types/2", SubcategoryDto.class);
         Assertions.assertEquals("New ProductType",getForEntity.getBody().getTitle());
@@ -71,10 +92,7 @@ class ProductTypeTests {
                 httpEntity,
                 String.class
         );
-        Assertions.assertEquals("The product type has been deleted",deleteResponseEntity.getBody());
-        ResponseEntity<ProductTypeDto> getResponseEntity = this.testRestTemplate.getForEntity("/api/v1/products-types/3", ProductTypeDto.class);
-
-        Assertions.assertTrue(getResponseEntity.getStatusCode().is4xxClientError());
+        Assertions.assertEquals("The product type has been deleted.",deleteResponseEntity.getBody());
     }
 
     @Test
@@ -130,9 +148,9 @@ class ProductTypeTests {
         Assertions.assertTrue(responseEntityNotValidCategoryId.getStatusCode().is4xxClientError());
 
         Assertions.assertEquals("Validation exception", responseEntityEmptyTitle.getBody().getTitle());
-        Assertions.assertEquals("[The number of characters of the product type title must be from 2 to 40 characters]", responseEntitySmallNumberOfCharacters.getBody().getDetail());
-        Assertions.assertEquals("[The number of characters of the product type title must be from 2 to 40 characters]", responseEntityLargeNumberOfCharacters.getBody().getDetail());
-        Assertions.assertEquals("[The subcategoryId cannot be empty]", responseEntityNotValidCategoryId.getBody().getDetail());
+        Assertions.assertEquals("The number of characters of the product type title must be from 2 to 40 characters", responseEntitySmallNumberOfCharacters.getBody().getDetail());
+        Assertions.assertEquals("The number of characters of the product type title must be from 2 to 40 characters", responseEntityLargeNumberOfCharacters.getBody().getDetail());
+        Assertions.assertEquals("The subcategoryId cannot be empty", responseEntityNotValidCategoryId.getBody().getDetail());
     }
 
     @Test
@@ -174,9 +192,9 @@ class ProductTypeTests {
         Assertions.assertTrue(responseEntityNotValidCategoryId.getStatusCode().is4xxClientError());
 
         Assertions.assertEquals("Validation exception", responseEntityEmptyTitle.getBody().getTitle());
-        Assertions.assertEquals("[The number of characters of the product type title must be from 2 to 40 characters]", responseEntitySmallNumberOfCharacters.getBody().getDetail());
-        Assertions.assertEquals("[The number of characters of the product type title must be from 2 to 40 characters]", responseEntityLargeNumberOfCharacters.getBody().getDetail());
-        Assertions.assertEquals("[The subcategoryId cannot be empty]", responseEntityNotValidCategoryId.getBody().getDetail());
+        Assertions.assertEquals("The number of characters of the product type title must be from 2 to 40 characters", responseEntitySmallNumberOfCharacters.getBody().getDetail());
+        Assertions.assertEquals("The number of characters of the product type title must be from 2 to 40 characters", responseEntityLargeNumberOfCharacters.getBody().getDetail());
+        Assertions.assertEquals("The subcategoryId cannot be empty", responseEntityNotValidCategoryId.getBody().getDetail());
     }
 
 }

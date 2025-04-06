@@ -67,7 +67,7 @@ public class ProductController {
 
         this.productService.create(productDto);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("The product has been created");
+        return ResponseEntity.status(HttpStatus.CREATED).body("The product has been created.");
     }
 
     @PatchMapping("/{id}")
@@ -81,17 +81,17 @@ public class ProductController {
         this.updateValidator.validate(productDto);
 
         this.productService.update(id, productDto);
-        return ResponseEntity.status(HttpStatus.OK).body("The product has been updated");
+        return ResponseEntity.status(HttpStatus.OK).body("The product has been updated.");
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete product")
     public ResponseEntity<String> delete(@PathVariable("id") Integer id){
         this.productService.delete(id);
-        return ResponseEntity.status(HttpStatus.OK).body("The product has been deleted");
+        return ResponseEntity.status(HttpStatus.OK).body("The product has been deleted.");
     }
 
     private String collectErrorsToString(List<FieldError> fieldErrors){
-        return fieldErrors.stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList().toString();
+        return fieldErrors.stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList().toString().replace("[", "").replace("]", "");
     }
 }

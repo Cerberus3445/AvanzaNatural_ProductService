@@ -47,4 +47,5 @@ insert into products.product_type(subcategory_id, title, image) values (1,'Blue 
 insert into products.product_type(subcategory_id, title, image) values (1,'Ping T-Shirt','Image');
 
 insert into products.product(title, brand, description, price, in_stock, category_id, subcategory_id, product_type_id) values ('First Product', 'brand', 'description',19.9,true,4,1,1);
-insert into products.product(title, brand, description, price, in_stock, category_id, subcategory_id, product_type_id) values ('Second Product', 'brand', 'description',19.9,true,4,1,1)
+insert into products.product(title, brand, description, price, in_stock, category_id, subcategory_id, product_type_id) values ('Second Product', 'brand', 'description',19.9,true,4,1,1);
+insert into products.product(title, brand, description, price, in_stock, category_id, subcategory_id, product_type_id) values ('Third Product', 'brand', 'description',19.9,true,4,1,1);

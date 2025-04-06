@@ -53,7 +53,7 @@ public class SubcategoryController {
         this.createValidator.validate(subcategoryDto);
 
         this.subcategoryService.create(subcategoryDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("The subcategory has been created");
+        return ResponseEntity.status(HttpStatus.CREATED).body("The subcategory has been created.");
     }
 
     @PatchMapping("/{id}")
@@ -67,17 +67,17 @@ public class SubcategoryController {
         this.updateValidator.validate(subcategoryDto);
 
         this.subcategoryService.update(id, subcategoryDto);
-        return ResponseEntity.status(HttpStatus.OK).body("The subcategory has been updated");
+        return ResponseEntity.status(HttpStatus.OK).body("The subcategory has been updated.");
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete subcategory")
     public ResponseEntity<String> delete(@PathVariable("id") Integer id){
         this.subcategoryService.delete(id);
-        return ResponseEntity.status(HttpStatus.OK).body("The subcategory has been deleted");
+        return ResponseEntity.status(HttpStatus.OK).body("The subcategory has been deleted.");
     }
 
     private String collectErrorsToString(List<FieldError> fieldErrors){
-        return fieldErrors.stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList().toString();
+        return fieldErrors.stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList().toString().replace("[", "").replace("]", "");
     }
 }

@@ -1,14 +1,23 @@
 package com.cerberus.product_service;
 
+import com.cerberus.product_service.client.UserClient;
 import com.cerberus.product_service.dto.ProductDto;
+import com.cerberus.product_service.dto.Role;
+import com.cerberus.product_service.dto.UserDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.*;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import java.util.Optional;
+
+import static org.mockito.Mockito.when;
 
 @Import(TestcontainersConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -17,12 +26,23 @@ public class ProductTests {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
+    @MockitoBean
+    private static UserClient userClient;
+
     private static final HttpHeaders headers = new HttpHeaders();
 
     @BeforeAll
     public static void generateJwt(){
         JwtCreator jwtCreator = new JwtCreator();
         headers.setBearerAuth(jwtCreator.generateToken());
+    }
+
+
+    @BeforeEach
+    public void mockUserClient(){
+        when(userClient.getUserByEmail("admin@gmail.com")).thenReturn(
+                Optional.of(new UserDto(1L, "firstName", "lastName", "admin@gmail.com", "password", true, Role.ROLE_ADMIN))
+        );
     }
 
     @Test
@@ -35,11 +55,11 @@ public class ProductTests {
 
     @Test
     public void create(){
-        ProductDto productDto = new ProductDto(null,"Third Product","Brand","Description",200.00,true,1,1,1);
+        HttpEntity<ProductDto> productDto = new HttpEntity<>(new ProductDto(null,"Third Product","Brand","Description",200.00,true,1,1,1), headers);
         ResponseEntity<String> responseEntity = this.testRestTemplate.postForEntity("/api/v1/products", productDto,String.class);
 
         Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
-        Assertions.assertEquals("The product has been created",responseEntity.getBody());
+        Assertions.assertEquals("The product has been created.",responseEntity.getBody());
     }
 
     @Test
@@ -52,7 +72,7 @@ public class ProductTests {
                 String.class
         );
 
-        Assertions.assertEquals("The product has been updated",responseEntity);
+        Assertions.assertEquals("The product has been updated.",responseEntity.getBody());
 
         ResponseEntity<ProductDto> getForEntity = this.testRestTemplate.getForEntity("/api/v1/products/2", ProductDto.class);
 
@@ -61,15 +81,15 @@ public class ProductTests {
 
     @Test
     public void delete(){
-        this.testRestTemplate.delete("/api/v1/products/3");
-        ResponseEntity<ProductDto> responseEntity = this.testRestTemplate.exchange(
+        ResponseEntity<String> deleteResponseEntity = this.testRestTemplate.exchange(
                 "/api/v1/products/3",
                 HttpMethod.DELETE,
                 new HttpEntity<>(headers),
-                ProductDto.class
+                String.class
         );
 
-        Assertions.assertTrue(responseEntity.getStatusCode().is4xxClientError());
+        Assertions.assertEquals("The product has been deleted.", deleteResponseEntity.getBody());
+        Assertions.assertTrue(deleteResponseEntity.getStatusCode().is2xxSuccessful());
     }
 
     @Test
@@ -150,11 +170,11 @@ public class ProductTests {
 
         Assertions.assertEquals("Validation exception", responseEntityNotValidTitle.getBody().getTitle());
         Assertions.assertEquals("Validation exception", responseEntityNotValidBrand.getBody().getTitle());
-        Assertions.assertEquals("[The price of the product cannot be negative]", responseEntityNotValidPrice.getBody().getDetail());
-        Assertions.assertEquals("[The product inStock status cannot be empty]", responseEntityNotValidInStockStatus.getBody().getDetail());
-        Assertions.assertEquals("[The categoryId cannot be null]", responseEntityNotValidCategoryId.getBody().getDetail());
-        Assertions.assertEquals("[The subcategoryId cannot be null]", responseEntityNotValidSubcategoryId.getBody().getDetail());
-        Assertions.assertEquals("[The productTypeId cannot be null]", responseEntityNotValidProductTypeId.getBody().getDetail());
+        Assertions.assertEquals("The price of the product cannot be negative", responseEntityNotValidPrice.getBody().getDetail());
+        Assertions.assertEquals("The product inStock status cannot be empty", responseEntityNotValidInStockStatus.getBody().getDetail());
+        Assertions.assertEquals("The categoryId cannot be null", responseEntityNotValidCategoryId.getBody().getDetail());
+        Assertions.assertEquals("The subcategoryId cannot be null", responseEntityNotValidSubcategoryId.getBody().getDetail());
+        Assertions.assertEquals("The productTypeId cannot be null", responseEntityNotValidProductTypeId.getBody().getDetail());
     }
 
     @Test
@@ -226,11 +246,11 @@ public class ProductTests {
 
         Assertions.assertEquals("Validation exception", responseEntityNotValidTitle.getBody().getTitle());
         Assertions.assertEquals("Validation exception", responseEntityNotValidBrand.getBody().getTitle());
-        Assertions.assertEquals("[The price of the product cannot be negative]", responseEntityNotValidPrice.getBody().getDetail());
-        Assertions.assertEquals("[The product inStock status cannot be empty]", responseEntityNotValidInStockStatus.getBody().getDetail());
-        Assertions.assertEquals("[The categoryId cannot be null]", responseEntityNotValidCategoryId.getBody().getDetail());
-        Assertions.assertEquals("[The subcategoryId cannot be null]", responseEntityNotValidSubcategoryId.getBody().getDetail());
-        Assertions.assertEquals("[The productTypeId cannot be null]", responseEntityNotValidProductTypeId.getBody().getDetail());
+        Assertions.assertEquals("The price of the product cannot be negative", responseEntityNotValidPrice.getBody().getDetail());
+        Assertions.assertEquals("The product inStock status cannot be empty", responseEntityNotValidInStockStatus.getBody().getDetail());
+        Assertions.assertEquals("The categoryId cannot be null", responseEntityNotValidCategoryId.getBody().getDetail());
+        Assertions.assertEquals("The subcategoryId cannot be null", responseEntityNotValidSubcategoryId.getBody().getDetail());
+        Assertions.assertEquals("The productTypeId cannot be null", responseEntityNotValidProductTypeId.getBody().getDetail());
     }
 
 }
