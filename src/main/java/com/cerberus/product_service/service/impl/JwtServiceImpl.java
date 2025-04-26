@@ -26,7 +26,7 @@ public class JwtServiceImpl implements JwtService {
     public static final String SECRET = "5367566B5970337336762342342342341139792F4123F452811482B4D6251655468576D5A71347437";
 
     @Override
-    public Boolean validateToken(String token, UserDetails userDetails) {
+    public Boolean validateToken(String token) {
         Map<String, Object> claims = extractAllClaims(token);
         String emailConfirmed = claims.get("emailConfirmed").toString();
         String role = claims.get("role").toString();

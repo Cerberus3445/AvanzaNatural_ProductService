@@ -7,7 +7,7 @@ import java.util.Collection;
 
 public interface JwtService {
 
-    Boolean validateToken(String token, UserDetails userDetails);
+    Boolean validateToken(String token);
 
     String extractEmail(String token);
 
