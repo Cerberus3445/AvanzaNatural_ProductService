@@ -3,6 +3,7 @@ package com.cerberus.product_service.controller;
 import com.cerberus.product_service.exception.AlreadyExistsException;
 import com.cerberus.product_service.exception.NotFoundException;
 import com.cerberus.product_service.exception.ValidationException;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;

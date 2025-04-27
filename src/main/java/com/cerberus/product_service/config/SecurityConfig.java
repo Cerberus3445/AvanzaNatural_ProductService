@@ -40,11 +40,11 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET,"/api/v1/products/**", "/api/v1/categories/**", "/api/v1/subcategories/**",
                                 "/api/v1/products-types/**").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/api/v1/products", "/api/v1/categories", "/api/v1/subcategories",
-                                        "/api/v1/products-types").hasAnyRole("ADMIN")
+                                        "/api/v1/products-types").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.PATCH,"/api/v1/products/**", "/api/v1/categories/**", "/api/v1/subcategories/**",
-                                        "/api/v1/products-types/").hasAnyRole("ADMIN")
+                                        "/api/v1/products-types/").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.DELETE,"/api/v1/products/**", "/api/v1/categories/**", "/api/v1/subcategories/**",
-                                        "/api/v1/products-types/**").hasAnyRole("ADMIN")
+                                        "/api/v1/products-types/**").hasRole("ADMIN")
                                 .anyRequest().authenticated())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
@@ -55,7 +55,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
+    public UserDetailsService userDetailsService() { //we use jwt filter
         return username -> {
             throw new UsernameNotFoundException("User not found");
         };

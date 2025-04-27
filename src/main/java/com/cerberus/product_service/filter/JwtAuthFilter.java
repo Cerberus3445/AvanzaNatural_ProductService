@@ -1,6 +1,10 @@
 package com.cerberus.product_service.filter;
 
+import com.cerberus.product_service.exception.NotFoundException;
+import com.cerberus.product_service.exception.ValidationException;
 import com.cerberus.product_service.service.JwtService;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,13 +14,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collection;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
@@ -29,10 +33,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String email = null;
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
-            email = this.jwtService.extractEmail(token);
+            try {
+                email = this.jwtService.extractEmail(token);
+            } catch (JwtException e){ //Expired, InvalidSignature, etc exception
+                email = null;
+            }
         }
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            if (jwtService.validateToken(token)) {
+            if(this.jwtService.validateToken(token)){
                 Collection<? extends GrantedAuthority> authorities = this.jwtService.extractRole(token);
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email, null, authorities);
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
