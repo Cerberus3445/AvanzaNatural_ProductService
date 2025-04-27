@@ -1,12 +1,6 @@
 package com.cerberus.product_service;
 
-import com.cerberus.product_service.client.UserClient;
 import com.cerberus.product_service.dto.CategoryDto;
-
-import com.cerberus.product_service.dto.Role;
-import com.cerberus.product_service.dto.UserDto;
-import com.cerberus.product_service.model.UserCredential;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.*;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-
-import java.util.Optional;
-
-import static org.mockito.Mockito.when;
 
 
 @Slf4j
@@ -29,22 +18,12 @@ class CategoryTests {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
-    @MockitoBean
-    private static UserClient userClient;
-
     private static final HttpHeaders headers = new HttpHeaders();
 
     @BeforeAll
     public static void generateJwt(){
         JwtCreator jwtCreator = new JwtCreator();
         headers.setBearerAuth(jwtCreator.generateToken());
-    }
-
-    @BeforeEach
-    public void mockUserClient(){
-        when(userClient.getUserByEmail("admin@gmail.com")).thenReturn(
-                Optional.of(new UserDto(1L, "firstName", "lastName", "admin@gmail.com", "password", true, Role.ROLE_ADMIN))
-        );
     }
 
     @Test
