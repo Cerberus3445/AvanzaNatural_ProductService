@@ -2,29 +2,32 @@ package com.cerberus.product_service.mapper;
 
 import com.cerberus.product_service.dto.ProductTypeDto;
 import com.cerberus.product_service.model.ProductType;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
-public interface ProductTypeMapper extends Mappable<ProductType, ProductTypeDto>{
+@Component
+@RequiredArgsConstructor
+public class ProductTypeMapper implements Mappable<ProductType, ProductTypeDto>{
+
+    private final ModelMapper modelMapper;
 
     @Override
-    @Mapping(target = "subcategory", source = "subcategoryId")
-    ProductType toEntity(ProductTypeDto productTypeDto);
-
-    @Override
-    @Mapping(target = "subcategoryId", source = "subcategory")
-    ProductTypeDto toDto(ProductType productType);
-
-    default List<ProductTypeDto> toDto(List<ProductType> list) {
-        if (list == null) {
-            return null;
-        }
-        return list.stream()
-                .map(this::toDto)
-                .toList();
+    public ProductType toEntity(ProductTypeDto productTypeDto) {
+        return this.modelMapper.map(productTypeDto, ProductType.class);
     }
 
+    @Override
+    public ProductTypeDto toDto(ProductType productType) {
+        return this.modelMapper.map(productType, ProductTypeDto.class);
+    }
+
+    @Override
+    public List<ProductTypeDto> toDto(List<ProductType> e) {
+        return e.stream()
+                .map(productType -> this.modelMapper.map(productType, ProductTypeDto.class))
+                .toList();
+    }
 }

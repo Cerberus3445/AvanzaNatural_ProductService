@@ -5,6 +5,7 @@ import com.cerberus.product_service.exception.ValidationException;
 import com.cerberus.product_service.service.ProductService;
 import com.cerberus.product_service.validator.CreateValidator;
 import com.cerberus.product_service.validator.UpdateValidator;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -22,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/products")
 @Tag(name = "Product Controller", description = "Interaction with products")
+@RateLimiter(name = "productLimiter")
 public class ProductController {
 
     private final ProductService productService;

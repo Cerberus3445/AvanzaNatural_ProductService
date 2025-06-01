@@ -1,12 +1,11 @@
 package com.cerberus.product_service.controller;
 
-import com.cerberus.product_service.dto.CategoryDto;
-import com.cerberus.product_service.dto.ProductDto;
 import com.cerberus.product_service.dto.ProductTypeDto;
 import com.cerberus.product_service.exception.ValidationException;
 import com.cerberus.product_service.service.ProductTypeService;
 import com.cerberus.product_service.validator.CreateValidator;
 import com.cerberus.product_service.validator.UpdateValidator;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -24,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/products-types")
 @Tag(name = "ProductType Controller", description = "Interaction with products types")
+@RateLimiter(name = "productTypeLimiter")
 public class ProductTypeController {
 
     private final ProductTypeService productTypeService;

@@ -2,28 +2,32 @@ package com.cerberus.product_service.mapper;
 
 import com.cerberus.product_service.dto.SubcategoryDto;
 import com.cerberus.product_service.model.Subcategory;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
-public interface SubcategoryMapper extends Mappable<Subcategory, SubcategoryDto>{
+@Component
+@RequiredArgsConstructor
+public class SubcategoryMapper implements Mappable<Subcategory, SubcategoryDto>{
+
+    private final ModelMapper modelMapper;
 
     @Override
-    @Mapping(target = "category", source = "categoryId")
-    Subcategory toEntity(SubcategoryDto subcategoryDto);
+    public Subcategory toEntity(SubcategoryDto subcategoryDto) {
+        return this.modelMapper.map(subcategoryDto, Subcategory.class);
+    }
 
     @Override
-    @Mapping(target = "categoryId", source = "category")
-    SubcategoryDto toDto(Subcategory subcategory);
+    public SubcategoryDto toDto(Subcategory subcategory) {
+        return this.modelMapper.map(subcategory, SubcategoryDto.class);
+    }
 
-    default List<SubcategoryDto> toDto(List<Subcategory> list) {
-        if (list == null) {
-            return null;
-        }
-        return list.stream()
-                .map(this::toDto)
+    @Override
+    public List<SubcategoryDto> toDto(List<Subcategory> e) {
+        return e.stream()
+                .map(subcategory -> this.modelMapper.map(subcategory, SubcategoryDto.class))
                 .toList();
     }
 }

@@ -2,16 +2,13 @@ package com.cerberus.product_service.service.impl;
 
 import com.cerberus.product_service.cache.CacheClear;
 import com.cerberus.product_service.dto.CategoryDto;
-import com.cerberus.product_service.dto.ProductDto;
 import com.cerberus.product_service.dto.SubcategoryDto;
 import com.cerberus.product_service.exception.NotFoundException;
 import com.cerberus.product_service.mapper.CategoryMapper;
-import com.cerberus.product_service.mapper.ProductMapper;
 import com.cerberus.product_service.mapper.SubcategoryMapper;
 import com.cerberus.product_service.model.Category;
 import com.cerberus.product_service.repository.CategoryRepository;
 import com.cerberus.product_service.service.CategoryService;
-import com.cerberus.product_service.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -32,11 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryMapper categoryMapper;
 
-    private final ProductMapper productMapper;
-
     private final SubcategoryMapper subcategoryMapper;
-
-    private final StorageService storageService;
 
     private final CacheClear cacheClear;
 

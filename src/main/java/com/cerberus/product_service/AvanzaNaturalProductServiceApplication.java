@@ -15,7 +15,7 @@ public class AvanzaNaturalProductServiceApplication {
     }
 
     @Bean
-    public ModelMapper mapper(){
+    public ModelMapper modelMapper(){
         return new ModelMapper();
     }
 }

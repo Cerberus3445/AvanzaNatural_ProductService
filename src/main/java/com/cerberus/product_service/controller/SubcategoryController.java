@@ -1,12 +1,12 @@
 package com.cerberus.product_service.controller;
 
-import com.cerberus.product_service.dto.ProductDto;
 import com.cerberus.product_service.dto.ProductTypeDto;
 import com.cerberus.product_service.dto.SubcategoryDto;
 import com.cerberus.product_service.exception.ValidationException;
 import com.cerberus.product_service.service.SubcategoryService;
 import com.cerberus.product_service.validator.CreateValidator;
 import com.cerberus.product_service.validator.UpdateValidator;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -24,6 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/subcategories")
 @Tag(name = "Subcategory Controller", description = "Interaction with subcategories")
+@RateLimiter(name = "subcategoryLimiter")
 public class SubcategoryController {
 
     private final SubcategoryService subcategoryService;

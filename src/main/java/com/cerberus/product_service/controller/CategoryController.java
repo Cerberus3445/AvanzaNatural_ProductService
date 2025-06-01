@@ -8,6 +8,7 @@ import com.cerberus.product_service.exception.ValidationException;
 import com.cerberus.product_service.service.CategoryService;
 import com.cerberus.product_service.validator.CreateValidator;
 import com.cerberus.product_service.validator.UpdateValidator;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,6 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/categories")
 @Tag(name = "Category Controller", description = "Interaction with categories")
+@RateLimiter(name = "categoryLimiter")
 public class CategoryController {
 
     private final CategoryService categoryService;
