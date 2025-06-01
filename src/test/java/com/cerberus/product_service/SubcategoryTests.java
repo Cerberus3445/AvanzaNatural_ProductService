@@ -28,7 +28,9 @@ class SubcategoryTests {
 
     @Test
     public void get(){
-        ResponseEntity<SubcategoryDto> responseEntity = this.testRestTemplate.getForEntity("/api/v1/subcategories/1", SubcategoryDto.class);
+        ResponseEntity<SubcategoryDto> responseEntity = this.testRestTemplate.getForEntity(
+                "/api/v1/subcategories/1",
+                SubcategoryDto.class);
 
         Assertions.assertEquals("T-shirts", responseEntity.getBody().getTitle());
         Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());

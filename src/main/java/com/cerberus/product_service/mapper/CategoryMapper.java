@@ -2,19 +2,32 @@ package com.cerberus.product_service.mapper;
 
 import com.cerberus.product_service.dto.CategoryDto;
 import com.cerberus.product_service.model.Category;
-import org.mapstruct.Mapper;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
-public interface CategoryMapper extends Mappable<Category, CategoryDto>{
+@Component
+@RequiredArgsConstructor
+public class CategoryMapper implements Mappable<Category, CategoryDto> {
 
-    default List<CategoryDto> toDto(List<Category> list) {
-        if (list == null) {
-            return null;
-        }
-        return list.stream()
-                .map(this::toDto)
+    private final ModelMapper modelMapper;
+
+    @Override
+    public Category toEntity(CategoryDto categoryDto) {
+        return this.modelMapper.map(categoryDto, Category.class);
+    }
+
+    @Override
+    public CategoryDto toDto(Category category) {
+        return this.modelMapper.map(category, CategoryDto.class);
+    }
+
+    @Override
+    public List<CategoryDto> toDto(List<Category> e) {
+        return e.stream()
+                .map(category -> this.modelMapper.map(category, CategoryDto.class))
                 .toList();
     }
 }

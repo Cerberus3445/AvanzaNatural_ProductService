@@ -3,6 +3,7 @@ package com.cerberus.product_service.controller;
 import com.cerberus.product_service.exception.AlreadyExistsException;
 import com.cerberus.product_service.exception.NotFoundException;
 import com.cerberus.product_service.exception.ValidationException;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -30,6 +31,16 @@ public class AdviceController {
     public ProblemDetail problemDetail(AlreadyExistsException exception){
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_GATEWAY, exception.getMessage());
         problemDetail.setTitle("Already exists");
+        return problemDetail;
+    }
+
+    @ExceptionHandler(RequestNotPermitted.class)
+    public ProblemDetail handleException(RequestNotPermitted exception){
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.TOO_MANY_REQUESTS, exception.getMessage()
+        );
+        problemDetail.setTitle("Too many requests");
+        problemDetail.setDetail("The allowed number of requests has been exceeded. Please repeat later.");
         return problemDetail;
     }
 }
