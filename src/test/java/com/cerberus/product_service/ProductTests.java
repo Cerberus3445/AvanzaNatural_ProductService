@@ -45,6 +45,7 @@ public class ProductTests {
     @Test
     public void update(){
         HttpEntity<ProductDto> productDto = new HttpEntity<>(new ProductDto(null,"Fourth Product","Brand","Description",200.00,true,1,1,1),headers);
+
         ResponseEntity<String> responseEntity = this.testRestTemplate.exchange(
                 "/api/v1/products/2",
                 HttpMethod.PATCH,
